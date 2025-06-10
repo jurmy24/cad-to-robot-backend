@@ -213,10 +213,10 @@ async def send_urdf_file(client_id: str, robot_name: str = "default-robot"):
         await manager.send_personal_message(json.dumps(error_response), client_id)
 
 
-async def handle_agent_request(message: str, client_id: str, request_id: str):
+async def handle_agent_request(message: str, client_id: str, request_id: str, robot_name: str):
     """Handle agent request with cancellation support"""
     try:
-        async for response in get_agent_response(message, client_id):
+        async for response in get_agent_response(message, client_id, robot_name):
             # Check if request was cancelled
             if request_id not in active_requests:
                 print(f"Request {request_id} was cancelled")
@@ -224,25 +224,39 @@ async def handle_agent_request(message: str, client_id: str, request_id: str):
 
             await manager.send_personal_message(json.dumps(response), client_id)
 
-            # Check if this was a successful tool observation for URDF-modifying tools
-            if response.get("type") == "tool_observation" and "✅" in response.get(
-                "tool_observation", {}
-            ).get("output", ""):
+            # Check if this was a successful URDF creation/modification
+            if response.get("type") == "tool_observation":
                 output = response.get("tool_observation", {}).get("output", "")
-                # Check if any URDF-modifying operations completed successfully
-                if any(
+                
+                # Only send URDF file if URDF creation/modification was successful
+                # Look for success indicators AND URDF-related operations
+                if ("✅" in output or "🎉" in output) and any(
                     keyword in output.lower()
                     for keyword in [
                         "onshape",
                         "conversion completed",
+                        "robot processing completed",
+                        "urdf generated",
+                        "urdf created",
                         "duplicate",
                         "removed",
                         "material",
                         "urdf",
-                        "robot processing completed",
                     ]
                 ):
-                    await send_urdf_file(client_id)
+                    # Additional check: make sure it's not a failure message
+                    if not any(
+                        fail_keyword in output.lower()
+                        for fail_keyword in [
+                            "failed",
+                            "error",
+                            "❌",
+                            "could not",
+                            "unable to",
+                            "conversion failed",
+                        ]
+                    ):
+                        await send_urdf_file(client_id, robot_name)
     except asyncio.CancelledError:
         print(f"Agent request {request_id} was cancelled")
         # Send cancellation confirmation
@@ -283,42 +297,43 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 if call_id:
                     response = await handle_tool_approval(call_id, approved)
                     await manager.send_personal_message(json.dumps(response), client_id)
-
-                    # Check if this was a URDF-modifying tool that succeeded
+                    
+                    # Check if this was a successful URDF creation/modification
                     if (
                         approved
                         and response.get("type") == "tool_observation"
-                        and response.get("tool_observation", {})
-                        .get("output", "")
-                        .startswith("✅")
                     ):
-                        # Extract tool name from the response (this is a bit hacky, but works)
                         output = response.get("tool_observation", {}).get("output", "")
-                        urdf_modifying_tools = [
-                            "run_onshape_conversion",
-                            "remove_duplicate_links",
-                            "set_material",
-                            "set_multiple_materials",
-                        ]
-
-                        # Check if any of the URDF-modifying tools were mentioned in the output
-                        for tool_name in urdf_modifying_tools:
-                            if any(
-                                keyword in output.lower()
-                                for keyword in [
-                                    "onshape",
-                                    "conversion",
-                                    "duplicate",
-                                    "material",
-                                    "urdf",
+                        
+                        # Only send URDF file if URDF creation/modification was successful
+                        # Look for success indicators AND URDF-related operations
+                        if ("✅" in output or "🎉" in output) and any(
+                            keyword in output.lower()
+                            for keyword in [
+                                "onshape",
+                                "conversion completed", 
+                                "robot processing completed",
+                                "urdf generated",
+                                "urdf created",
+                                "duplicate",
+                                "removed",
+                                "material",
+                                "urdf",
+                            ]
+                        ):
+                            # Additional check: make sure it's not a failure message
+                            if not any(
+                                fail_keyword in output.lower()
+                                for fail_keyword in [
+                                    "failed",
+                                    "error", 
+                                    "❌",
+                                    "could not",
+                                    "unable to",
+                                    "conversion failed",
                                 ]
                             ):
-                                await send_urdf_file(client_id)
-                            if any(keyword in output.lower() for keyword in [
-                                "onshape", "conversion", "duplicate", "material", "urdf"
-                            ]):
                                 await send_urdf_file(client_id, robot_name)
-                                break
             else:
                 # Use agent responses for regular messages
                 async for response in get_agent_response(
@@ -326,17 +341,39 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 ):
                     await manager.send_personal_message(json.dumps(response), client_id)
                     
-                    # Check if this was a successful tool observation for URDF-modifying tools
-                    if (response.get("type") == "tool_observation" and 
-                        "✅" in response.get("tool_observation", {}).get("output", "")):
-                        
+                    # Check if this was a successful URDF creation/modification
+                    if response.get("type") == "tool_observation":
                         output = response.get("tool_observation", {}).get("output", "")
-                        # Check if any URDF-modifying operations completed successfully
-                        if any(keyword in output.lower() for keyword in [
-                            "onshape", "conversion completed", "duplicate", "removed", 
-                            "material", "urdf", "robot processing completed"
-                        ]):
-                            await send_urdf_file(client_id, robot_name)
+                        
+                        # Only send URDF file if URDF creation/modification was successful
+                        # Look for success indicators AND URDF-related operations
+                        if ("✅" in output or "🎉" in output) and any(
+                            keyword in output.lower()
+                            for keyword in [
+                                "onshape",
+                                "conversion completed",
+                                "robot processing completed", 
+                                "urdf generated",
+                                "urdf created",
+                                "duplicate",
+                                "removed",
+                                "material",
+                                "urdf",
+                            ]
+                        ):
+                            # Additional check: make sure it's not a failure message
+                            if not any(
+                                fail_keyword in output.lower()
+                                for fail_keyword in [
+                                    "failed",
+                                    "error",
+                                    "❌", 
+                                    "could not",
+                                    "unable to",
+                                    "conversion failed",
+                                ]
+                            ):
+                                await send_urdf_file(client_id, robot_name)
 
     except WebSocketDisconnect:
         # Cancel all active requests for this client

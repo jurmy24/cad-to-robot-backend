@@ -170,6 +170,7 @@ async def get_agent_response(
 
         current_streaming_content = ""
         current_tool_call = None
+        stream_interrupted = False  # Track if streaming was interrupted by tools
 
         async for event in result.stream_events():
             if event.type == "raw_response_event" and isinstance(
@@ -177,7 +178,14 @@ async def get_agent_response(
             ):
                 # Stream text response
                 delta_content = event.data.delta
-                current_streaming_content += delta_content
+
+                # If streaming was interrupted by tools, start fresh
+                if stream_interrupted:
+                    current_streaming_content = delta_content  # Start fresh
+                    stream_interrupted = False
+                else:
+                    current_streaming_content += delta_content  # Continue accumulating
+
                 yield {
                     "type": "stream",
                     "content": current_streaming_content,
@@ -187,6 +195,9 @@ async def get_agent_response(
 
             elif event.type == "run_item_stream_event":
                 if event.item.type == "tool_call_item":
+                    # Tool call started - mark that streaming was interrupted
+                    stream_interrupted = True
+
                     # Tool call started - use safe attribute access
                     tool_call = event.item.raw_item
                     tool_name = getattr(
@@ -223,7 +234,7 @@ async def get_agent_response(
                         # The client must call handle_tool_approval() with approval/denial
 
                 elif event.item.type == "tool_call_output_item":
-                    # Tool execution completed
+                    # Tool execution completed - streaming will resume fresh
                     if current_tool_call:
                         # Update context based on tool results
                         await update_context_from_tool_result(
