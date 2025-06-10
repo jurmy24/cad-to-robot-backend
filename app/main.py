@@ -161,6 +161,55 @@ async def stream_response(message: str) -> AsyncGenerator[str, None]:
         yield word + " "
 
 
+async def send_urdf_file(client_id: str, robot_name: str = "folding-mechanism"):
+    """Send the current URDF file content to the client"""
+    try:
+        # Look for URDF file in the robot directory
+        robot_dir = DATA_DIR / robot_name
+        possible_urdf_paths = [
+            robot_dir / "robot.urdf",
+            robot_dir / f"{robot_name}.urdf",
+            *list(robot_dir.glob("*.urdf"))
+        ]
+        
+        urdf_path = None
+        for path in possible_urdf_paths:
+            if path.exists():
+                urdf_path = path
+                break
+        
+        if urdf_path and urdf_path.exists():
+            with open(urdf_path, 'r', encoding='utf-8') as f:
+                urdf_content = f.read()
+            
+            urdf_response = {
+                "type": "urdf_file",
+                "urdf_content": urdf_content,
+                "file_path": str(urdf_path.relative_to(DATA_DIR)),
+                "timestamp": datetime.now().isoformat(),
+                "sender": "system"
+            }
+            await manager.send_personal_message(json.dumps(urdf_response), client_id)
+        else:
+            # URDF file not found
+            error_response = {
+                "type": "urdf_error",
+                "content": f"URDF file not found in {robot_dir}",
+                "timestamp": datetime.now().isoformat(),
+                "sender": "system"
+            }
+            await manager.send_personal_message(json.dumps(error_response), client_id)
+    
+    except Exception as e:
+        error_response = {
+            "type": "urdf_error", 
+            "content": f"Error reading URDF file: {str(e)}",
+            "timestamp": datetime.now().isoformat(),
+            "sender": "system"
+        }
+        await manager.send_personal_message(json.dumps(error_response), client_id)
+
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: str):
     await manager.connect(websocket, client_id)
@@ -177,12 +226,40 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 if call_id:
                     response = await handle_tool_approval(call_id, approved)
                     await manager.send_personal_message(json.dumps(response), client_id)
+                    
+                    # Check if this was a URDF-modifying tool that succeeded
+                    if (approved and response.get("type") == "tool_observation" and 
+                        response.get("tool_observation", {}).get("output", "").startswith("✅")):
+                        
+                        # Extract tool name from the response (this is a bit hacky, but works)
+                        output = response.get("tool_observation", {}).get("output", "")
+                        urdf_modifying_tools = ["run_onshape_conversion", "remove_duplicate_links", "set_material", "set_multiple_materials"]
+                        
+                        # Check if any of the URDF-modifying tools were mentioned in the output
+                        for tool_name in urdf_modifying_tools:
+                            if any(keyword in output.lower() for keyword in [
+                                "onshape", "conversion", "duplicate", "material", "urdf"
+                            ]):
+                                await send_urdf_file(client_id)
+                                break
             else:
                 # Use agent responses for regular messages
                 async for response in get_agent_response(
                     message_data.get("content", ""), client_id
                 ):
                     await manager.send_personal_message(json.dumps(response), client_id)
+                    
+                    # Check if this was a successful tool observation for URDF-modifying tools
+                    if (response.get("type") == "tool_observation" and 
+                        "✅" in response.get("tool_observation", {}).get("output", "")):
+                        
+                        output = response.get("tool_observation", {}).get("output", "")
+                        # Check if any URDF-modifying operations completed successfully
+                        if any(keyword in output.lower() for keyword in [
+                            "onshape", "conversion completed", "duplicate", "removed", 
+                            "material", "urdf", "robot processing completed"
+                        ]):
+                            await send_urdf_file(client_id)
 
     except WebSocketDisconnect:
         manager.disconnect(client_id)
