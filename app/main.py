@@ -148,17 +148,6 @@ async def upload_robot(
             shutil.rmtree(temp_dir)
 
 
-@app.post("/message")
-async def message(request: Request, message: str = Form(...)):
-    print(f"Received message: {message}")
-
-    return JSONResponse(
-        content={
-            "message": "Message received. I would like to thank you for helping me receive this beautiful message from you!"
-        }
-    )
-
-
 async def stream_response(message: str) -> AsyncGenerator[str, None]:
     """
     Helper function to simulate streaming a response.
