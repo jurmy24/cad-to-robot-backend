@@ -70,12 +70,23 @@ cad_agent = Agent[CADtoURDFContext](
         "\nAfter attempting URDF conversion (using run_onshape_conversion), you MUST:"
         "1. **IF CONVERSION FAILED**: Analyze the error message and take corrective action first"
         "   - If PLANAR mates are mentioned, use rename_mates to fix them"
+        "   - **AFTER fixing mates, IMMEDIATELY run run_onshape_conversion again**"
         "   - If other mate issues exist, address them before retrying"
         "2. **IF CONVERSION SUCCEEDED**: Immediately read and analyze the generated URDF file"
         "3. Check for duplicate links and remove them if found"
         "4. Verify mate names and rename them if they don't follow dof_ conventions"
         "5. Assess if materials need to be set for better visualization"
         "6. Provide a comprehensive summary of all changes made"
+        "\n\n## CAD DATA MODIFICATION REQUIREMENTS:"
+        "\nIMPORTANT: If you modify any CAD-related files, you MUST rebuild the URDF!"
+        "\nAfter using tools that modify CAD data (like rename_mates), you MUST:"
+        "1. **IMMEDIATELY** run run_onshape_conversion again to rebuild the URDF"
+        "2. The URDF file becomes outdated when CAD data changes"
+        "3. Always regenerate before doing URDF analysis or further modifications"
+        "\nCAD data modifications include:"
+        "- Renaming mates (changes assembly structure)"
+        "- Modifying config.json or assembly_data.json"
+        "- Any changes to joint/mate definitions"
         "\n\n## FAILURE HANDLING:"
         "\nNEVER stop after a tool failure. Always:"
         "- Analyze the error message carefully"
@@ -263,9 +274,12 @@ async def update_context_from_tool_result(
         # Store URDF analysis
         context.last_analysis = output
     elif tool_name == "rename_mates":
-        # Clear pending renames if successful
+        # Clear pending renames if successful, but mark URDF as needing rebuild
         if "✅" in output:
             context.pending_renames = {}
+            context.urdf_issues.append("URDF needs rebuild - CAD data was modified")
+        elif "❌" in output:
+            context.urdf_issues.append("Mate renaming failed - needs attention")
     elif tool_name in [
         "remove_duplicate_links",
         "set_material",
