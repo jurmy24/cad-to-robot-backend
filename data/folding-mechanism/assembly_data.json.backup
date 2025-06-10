@@ -896,7 +896,7 @@
               }
             }
           ],
-          "name": "planar_1"
+          "name": "dof_planar_1"
         }
       },
       {
@@ -1091,7 +1091,7 @@
               }
             }
           ],
-          "name": "planar_2"
+          "name": "dof_planar_2"
         }
       },
       {
@@ -1286,7 +1286,7 @@
               }
             }
           ],
-          "name": "planar_3"
+          "name": "dof_planar_3"
         }
       },
       {
@@ -1416,7 +1416,7 @@
               }
             }
           ],
-          "name": "planar_4"
+          "name": "dof_planar_4"
         }
       },
       {
@@ -1611,7 +1611,7 @@
               }
             }
           ],
-          "name": "planar_5"
+          "name": "dof_planar_5"
         }
       },
       {
@@ -1741,7 +1741,7 @@
               }
             }
           ],
-          "name": "planar_6"
+          "name": "dof_planar_6"
         }
       },
       {
@@ -1871,7 +1871,7 @@
               }
             }
           ],
-          "name": "planar_7"
+          "name": "dof_planar_7"
         }
       },
       {
@@ -2001,7 +2001,7 @@
               }
             }
           ],
-          "name": "planar_8"
+          "name": "dof_planar_8"
         }
       },
       {
@@ -2066,7 +2066,7 @@
               }
             }
           ],
-          "name": "planar_9"
+          "name": "dof_planar_9"
         }
       },
       {
@@ -2391,7 +2391,7 @@
               }
             }
           ],
-          "name": "planar_10"
+          "name": "dof_planar_10"
         }
       },
       {
@@ -2521,7 +2521,7 @@
               }
             }
           ],
-          "name": "planar_11"
+          "name": "dof_planar_11"
         }
       },
       {
@@ -2651,7 +2651,7 @@
               }
             }
           ],
-          "name": "planar_12"
+          "name": "dof_planar_12"
         }
       },
       {

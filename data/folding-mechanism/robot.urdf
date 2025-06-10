@@ -1,28 +1,24 @@
-<?xml version="1.0" ?>
-<!-- Generated using Placeholder agent system -->
-<!-- Onshape https://cad.onshape.com/documents/4310ba928596654794f7356f/w/c64fb7645706442b3cdc2d24/e/ea95f5804120f9d1b3974315 -->
+<?xml version='1.0' encoding='utf-8'?>
 <robot name="folding-mechanism">
-  <!-- Link back_left_axle -->
   <link name="back_left_axle">
     <inertial>
-      <origin xyz="0.04 -0.0492115 0.04" rpy="0 0 0"/>
-      <mass value="0.0246615"/>
-      <inertia ixx="3.08269e-07" ixy="4.88276e-37" ixz="-1.323e-38" iyy="3.44233e-06" iyz="2.15845e-24" izz="3.44233e-06"/>
+      <origin xyz="0.04 -0.0492115 0.04" rpy="0 0 0" />
+      <mass value="0.0246615" />
+      <inertia ixx="3.08269e-07" ixy="4.88276e-37" ixz="-1.323e-38" iyy="3.44233e-06" iyz="2.15845e-24" izz="3.44233e-06" />
     </inertial>
-    <!-- Part back_left_axle -->
     <visual>
-      <origin xyz="-2.77556e-17 -0.098675 0.0612924" rpy="-0.0259869 -0 -6.71907e-32"/>
+      <origin xyz="-2.77556e-17 -0.098675 0.0612924" rpy="-0.0259869 -0 -6.71907e-32" />
       <geometry>
-        <mesh filename="package://assets/back_left_axle.stl"/>
+        <mesh filename="package://assets/back_left_axle.stl" />
       </geometry>
       <material name="back_left_axle_material">
-        <color rgba="0.615686 0.811765 0.929412 1.0"/>
+        <color rgba="0.615686 0.811765 0.929412 1.0" />
       </material>
     </visual>
     <collision>
-      <origin xyz="-2.77556e-17 -0.098675 0.0612924" rpy="-0.0259869 -0 -6.71907e-32"/>
+      <origin xyz="-2.77556e-17 -0.098675 0.0612924" rpy="-0.0259869 -0 -6.71907e-32" />
       <geometry>
-        <mesh filename="package://assets/back_left_axle.stl"/>
+        <mesh filename="package://assets/back_left_axle.stl" />
       </geometry>
     </collision>
   </link>

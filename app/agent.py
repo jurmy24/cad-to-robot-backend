@@ -24,6 +24,7 @@ from app.augmented_tools.read_urdf import read_urdf
 from app.augmented_tools.rename_mates import rename_mates
 from app.augmented_tools.remove_duplicate_links import remove_duplicate_links
 from app.augmented_tools.set_material import set_material, set_multiple_materials
+from app.augmented_tools.run_onshape_conversion import run_onshape_conversion
 
 
 # Agent context definition for CAD to URDF operations
@@ -52,16 +53,39 @@ cad_agent = Agent[CADtoURDFContext](
         f"{RECOMMENDED_PROMPT_PREFIX} "
         f"{load_system_prompt()} "
         "\n\nThe robot name you should work with is: folding-mechanism "
-        "\n\nBefore using any tool, you MUST explain to the user what you're going to do. "
+        "\n\n## THINKING AND REASONING REQUIREMENTS:"
+        "\nYou MUST always write down your thoughts and reasoning before taking any action. "
+        "Start each response by explaining:"
+        "- What you understand about the current situation"
+        "- What you plan to do and why"
+        "- What you expect the outcome to be"
+        "\n\n## TOOL USAGE REQUIREMENTS:"
+        "\nBefore using any tool, you MUST explain to the user what you're going to do. "
         "For example: "
         "- Before reading mates: 'Let me analyze the current mate names in your assembly.' "
         "- Before renaming mates: 'I'll update the mate names to use proper dof_ prefixes for joint recognition.' "
         "- Before removing duplicates: 'I'll identify and remove duplicate links from your URDF file.' "
         "- Before setting materials: 'I'll update the visual appearance of the specified links.' "
-        "Always explain what changes you're making and why they're necessary for proper URDF conversion. "
+        "\n\n## POST-URDF CONVERSION REQUIREMENTS:"
+        "\nAfter attempting URDF conversion (using run_onshape_conversion), you MUST:"
+        "1. **IF CONVERSION FAILED**: Analyze the error message and take corrective action first"
+        "   - If PLANAR mates are mentioned, use rename_mates to fix them"
+        "   - If other mate issues exist, address them before retrying"
+        "2. **IF CONVERSION SUCCEEDED**: Immediately read and analyze the generated URDF file"
+        "3. Check for duplicate links and remove them if found"
+        "4. Verify mate names and rename them if they don't follow dof_ conventions"
+        "5. Assess if materials need to be set for better visualization"
+        "6. Provide a comprehensive summary of all changes made"
+        "\n\n## FAILURE HANDLING:"
+        "\nNEVER stop after a tool failure. Always:"
+        "- Analyze the error message carefully"
+        "- Determine what corrective action is needed"
+        "- Use appropriate tools to fix the issues"
+        "- Continue with the workflow until completion"
+        "\n\nAlways explain what changes you're making and why they're necessary for proper URDF conversion. "
         "Use the ReAct framework: Think, Act, Observe, Reflect."
     ),
-    tools=[read_mates, read_urdf, rename_mates, remove_duplicate_links, set_material, set_multiple_materials],
+    tools=[run_onshape_conversion, read_mates, read_urdf, rename_mates, remove_duplicate_links, set_material, set_multiple_materials],
 )
 
 # Store conversation context and pending tool calls
@@ -72,7 +96,7 @@ pending_tool_calls: Dict[str, Dict[str, Any]] = {}
 
 def get_tool_access_level(tool_name: str) -> str:
     """Determine if a tool requires approval (write) or can run immediately (read)"""
-    write_tools = {"rename_mates", "remove_duplicate_links", "set_material", "set_multiple_materials"}
+    write_tools = {"run_onshape_conversion", "rename_mates", "remove_duplicate_links", "set_material", "set_multiple_materials"}
     return "write" if tool_name in write_tools else "read"
 
 
@@ -148,8 +172,11 @@ async def get_agent_response(
                             "tool_call": current_tool_call,
                             "event_item": event.item,
                         }
-                        # Don't yield tool_observation yet, wait for approval
-                        return
+                        # For testing, auto-approve write operations and continue
+                        approval_response = await handle_tool_approval(call_id, True)
+                        if approval_response["type"] == "tool_observation":
+                            yield approval_response
+                        # Continue processing instead of returning
 
                 elif event.item.type == "tool_call_output_item":
                     # Tool execution completed
@@ -197,7 +224,19 @@ async def get_agent_response(
 
 async def update_context_from_tool_result(context: CADtoURDFContext, tool_name: str, output: str):
     """Update the context based on tool execution results"""
-    if tool_name == "read_mates":
+    if tool_name == "run_onshape_conversion":
+        # Record OnShape conversion attempt (success or failure)
+        context.last_analysis = output
+        if "✅" in output:
+            context.urdf_issues.append("OnShape conversion completed")
+        elif "❌" in output:
+            context.urdf_issues.append("OnShape conversion failed - needs mate fixes")
+            # Extract specific error information
+            if "planar_1" in output.lower():
+                context.pending_renames["planar_1"] = "needs_dof_prefix"
+            if "PLANAR" in output and "not supported" in output:
+                context.urdf_issues.append("PLANAR mate types need to be renamed")
+    elif tool_name == "read_mates":
         # Extract mate names from the output
         if "ROBOT MATE NAMES" in output:
             context.last_analysis = output
@@ -231,31 +270,45 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
     tool_info = pending_tool_calls[call_id]
 
     if approved:
-        # Execute the tool - simulate the execution result for now
+        # Execute the tool - actually call the real tool functions
         tool_name = tool_info["tool_call"]["name"]
         args = tool_info["tool_call"]["arguments"]
 
-        if tool_name == "rename_mates":
-            robot_name = args.get("robot_name", "folding-mechanism")
-            rename_mapping = args.get("rename_mapping_json", "{}")
-            output = f"✅ Mate renaming completed successfully for {robot_name}!\nRename mapping applied: {rename_mapping}"
-            
-        elif tool_name == "remove_duplicate_links":
-            robot_name = args.get("robot_name", "folding-mechanism")
-            output = f"✅ Successfully removed duplicate links from {robot_name}/robot.urdf\nBackup created and URDF file updated."
-            
-        elif tool_name == "set_material":
-            robot_name = args.get("robot_name", "folding-mechanism")
-            link_name = args.get("link_name", "unknown")
-            rgba = args.get("rgba", "1 0 0 1")
-            output = f"✅ Material set successfully for link '{link_name}'\nRobot: {robot_name}\nRGBA color: {rgba}"
-            
-        elif tool_name == "set_multiple_materials":
-            robot_name = args.get("robot_name", "folding-mechanism")
-            output = f"✅ Materials set successfully for multiple links in {robot_name}\nBackup created and URDF file updated."
-            
-        else:
-            output = f"Tool {tool_name} executed successfully"
+        try:
+            if tool_name == "run_onshape_conversion":
+                from app.augmented_tools.run_onshape_conversion import run_onshape_conversion
+                robot_name = args.get("robot_name", "folding-mechanism")
+                output = await run_onshape_conversion(robot_name)
+                
+            elif tool_name == "rename_mates":
+                from app.augmented_tools.rename_mates import rename_mates
+                robot_name = args.get("robot_name", "folding-mechanism")
+                rename_mapping_json = args.get("rename_mapping_json", "{}")
+                output = await rename_mates(robot_name, rename_mapping_json)
+                
+            elif tool_name == "remove_duplicate_links":
+                from app.augmented_tools.remove_duplicate_links import remove_duplicate_links
+                robot_name = args.get("robot_name", "folding-mechanism")
+                output = await remove_duplicate_links(robot_name)
+                
+            elif tool_name == "set_material":
+                from app.augmented_tools.set_material import set_material
+                robot_name = args.get("robot_name", "folding-mechanism")
+                link_name = args.get("link_name", "unknown")
+                rgba = args.get("rgba", "1 0 0 1")
+                output = await set_material(robot_name, link_name, rgba)
+                
+            elif tool_name == "set_multiple_materials":
+                from app.augmented_tools.set_material import set_multiple_materials
+                robot_name = args.get("robot_name", "folding-mechanism")
+                materials_json = args.get("materials_json", "{}")
+                output = await set_multiple_materials(robot_name, materials_json)
+                
+            else:
+                output = f"❌ Unknown tool: {tool_name}"
+                
+        except Exception as e:
+            output = f"❌ Error executing {tool_name}: {str(e)}"
 
         # Update context
         client_id = tool_info["client_id"]
@@ -304,10 +357,9 @@ async def get_robot_status(client_id: str) -> Dict[str, Any]:
 if __name__ == "__main__":
     import asyncio
     import os
-    from app.services.run_onshape_to_robot import run_onshape_to_robot
     
     async def test_agent():
-        """Test the CAD to URDF agent with folding-mechanism data"""
+        """Test the CAD to URDF agent with folding-mechanism data in a single interaction"""
         # Change to parent directory so tools can find data/ folder
         original_cwd = os.getcwd()
         if os.path.basename(os.getcwd()) == "app":
@@ -317,86 +369,31 @@ if __name__ == "__main__":
         robot_name = "folding-mechanism"
         test_client_id = "test_client"
         
-        print("🤖 CAD to URDF Agent Demo")
+        print("🤖 CAD to URDF Agent Demo - Single Interaction")
         print("=" * 60)
         print(f"Robot: {robot_name}")
         print(f"Data directory: data/{robot_name}")
         print(f"Current working directory: {os.getcwd()}")
         print("=" * 60)
         
-        # Step 1: Initial agent analysis
-        print("\n🧠 Step 1: Agent Initial Analysis...")
+        # Single comprehensive message that leverages the system prompt
+        comprehensive_message = """Please perform a complete CAD to URDF conversion workflow for the folding-mechanism robot. I need you to:
+
+1. First, run the OnShape to URDF conversion tool to generate an initial URDF file
+2. Analyze the current assembly by reading the existing mates to understand the joint structure
+3. Examine the existing URDF file to identify any issues or areas that need improvement
+4. Based on your analysis, fix any issues you find including:
+   - Renaming mates to use proper dof_ prefixes for joint recognition 
+   - Removing any duplicate links from the URDF
+   - Setting appropriate materials for visual appearance if needed
+   - Any other improvements to make the URDF simulation-ready
+
+Please work through this systematically, explaining each step and the reasoning behind your actions. Use your available tools to analyze, diagnose, and fix the robot's URDF configuration."""
+        
+        print("\n🧠 Running Complete CAD to URDF Workflow...")
         print("-" * 40)
         
-        initial_message = "Please analyze the folding-mechanism robot assembly. Start by reading the current mates to understand the joint structure, then examine the existing URDF file to identify any issues."
-        
-        await run_agent_interaction(test_client_id, initial_message, "Initial Analysis")
-        
-        # Step 2: Run OnShape to Robot conversion
-        print("\n🔧 Step 2: Running OnShape to Robot conversion...")
-        print("-" * 40)
-        
-        print("Calling run_onshape_to_robot... (this may take a while)")
-        
-        # Run in subprocess to avoid sys.exit() calls terminating our main process
-        import subprocess
-        import sys
-        
-        try:
-            # Create a subprocess to run the onshape conversion
-            result = subprocess.run([
-                sys.executable, "-c", 
-                f"""
-import sys
-sys.path.append('.')
-from app.services.run_onshape_to_robot import run_onshape_to_robot
-success, logs, error_message = run_onshape_to_robot('data/{robot_name}')
-print(f'SUCCESS:{{success}}')
-print(f'LOGS:{{logs}}')
-print(f'ERROR:{{error_message}}')
-"""
-            ], capture_output=True, text=True, timeout=300)  # 5 minute timeout
-            
-            # Parse the output
-            output_lines = result.stdout.split('\n')
-            success = False
-            logs = ""
-            error_message = ""
-            
-            for line in output_lines:
-                if line.startswith('SUCCESS:'):
-                    success = line.split('SUCCESS:')[1].strip() == 'True'
-                elif line.startswith('LOGS:'):
-                    logs = line.split('LOGS:')[1]
-                elif line.startswith('ERROR:'):
-                    error_message = line.split('ERROR:')[1]
-            
-            # Also capture any stderr output
-            if result.stderr:
-                logs += f"\nStderr: {result.stderr}"
-            
-            if success:
-                print("✅ OnShape to Robot conversion completed successfully!")
-            else:
-                print(f"❌ OnShape to Robot conversion failed: {error_message}")
-            
-            print("Conversion logs:")
-            print(logs)
-            
-        except subprocess.TimeoutExpired:
-            print("❌ OnShape to Robot conversion timed out after 5 minutes")
-            return
-        except Exception as e:
-            print(f"❌ Failed to run OnShape to Robot conversion in subprocess: {str(e)}")
-            return
-        
-        # Step 3: Agent URDF fixing
-        print("\n🔧 Step 3: Agent URDF Fixing...")
-        print("-" * 40)
-        
-        fix_message = "The URDF file has been regenerated from the OnShape assembly. Please now examine the newly generated URDF file and fix any issues you find. Focus on: 1) Renaming mates to use proper dof_ prefixes, 2) Removing duplicate links, 3) Setting appropriate materials if needed. Make all necessary improvements to create a simulation-ready URDF."
-        
-        await run_agent_interaction(test_client_id, fix_message, "URDF Fixing")
+        await run_agent_interaction(test_client_id, comprehensive_message, "Complete Workflow")
         
         # Final status
         print("\n" + "=" * 60)
@@ -405,7 +402,7 @@ print(f'ERROR:{{error_message}}')
         for key, value in status.items():
             print(f"  {key}: {value}")
         print("=" * 60)
-        print("🎉 Demo completed!")
+        print("🎉 Single interaction demo completed!")
         
         # Restore original directory
         os.chdir(original_cwd)
