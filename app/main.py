@@ -273,7 +273,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             message_data = json.loads(data)
 
             # Extract robot_name from message data, with fallback to default
-            robot_name = message_data.get("robot_name", "default-robot")
+            robot_name = message_data.get("robot_name", "stable-wheel-legged")
 
             # Handle tool approval responses
             if message_data.get("type") == "tool_approval_response":
