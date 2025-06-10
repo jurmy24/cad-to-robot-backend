@@ -407,7 +407,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MHRrmLLu/sXH5D6pQ",
-        "name": "dof_revolute_1",
+        "name": "Revolute 1",
         "parameters": [
           {
             "type": 145,
@@ -1194,7 +1194,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MJ6Iyok2BVHbHwvZw",
-        "name": "dof_cylindrical_1",
+        "name": "Cylindrical 1",
         "parameters": [
           {
             "type": 145,
@@ -1981,7 +1981,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MDVJHCy2qZD0Ksk8R",
-        "name": "planar_1",
+        "name": "Planar 1",
         "parameters": [
           {
             "type": 145,
@@ -2768,7 +2768,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MRpd4fxAHp7sRCR1Z",
-        "name": "dof_revolute_2",
+        "name": "Revolute 2",
         "parameters": [
           {
             "type": 145,
@@ -3555,7 +3555,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MPD/L8M6tj1WAILHp",
-        "name": "dof_cylindrical_2",
+        "name": "Cylindrical 2",
         "parameters": [
           {
             "type": 145,
@@ -4342,7 +4342,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M/yz/o5t1MiMYqRnN",
-        "name": "planar_2",
+        "name": "Planar 2",
         "parameters": [
           {
             "type": 145,
@@ -5129,7 +5129,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MNCi4eJCbm4pptyC3",
-        "name": "dof_revolute_3",
+        "name": "Revolute 3",
         "parameters": [
           {
             "type": 145,
@@ -5916,7 +5916,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "Mol4IWiiK3f6RHq8j",
-        "name": "dof_cylindrical_3",
+        "name": "Cylindrical 3",
         "parameters": [
           {
             "type": 145,
@@ -6703,7 +6703,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MBJDJi3s+Flj8Zomn",
-        "name": "planar_3",
+        "name": "Planar 3",
         "parameters": [
           {
             "type": 145,
@@ -7490,7 +7490,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MtVXJcqMIvZYQy8jO",
-        "name": "dof_cylindrical_4",
+        "name": "Cylindrical 4",
         "parameters": [
           {
             "type": 145,
@@ -8277,7 +8277,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MCBhqwFkfvCRh6Mzj",
-        "name": "planar_4",
+        "name": "Planar 4",
         "parameters": [
           {
             "type": 145,
@@ -9064,7 +9064,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MR/xrk+shiiKkdViy",
-        "name": "dof_revolute_4",
+        "name": "Revolute 4",
         "parameters": [
           {
             "type": 145,
@@ -9851,7 +9851,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MAagLPUKF84+FDvWq",
-        "name": "dof_cylindrical_5",
+        "name": "Cylindrical 5",
         "parameters": [
           {
             "type": 145,
@@ -10638,7 +10638,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MjbcIQtH3a3ujSs4S",
-        "name": "planar_5",
+        "name": "Planar 5",
         "parameters": [
           {
             "type": 145,
@@ -11425,7 +11425,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MKJVpqhs0L6gasWlV",
-        "name": "dof_cylindrical_6",
+        "name": "Cylindrical 6",
         "parameters": [
           {
             "type": 145,
@@ -12212,7 +12212,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MU3wvFRuLWFizSxAP",
-        "name": "planar_6",
+        "name": "Planar 6",
         "parameters": [
           {
             "type": 145,
@@ -12999,7 +12999,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MeUmvhVJ6JAz9MIGX",
-        "name": "dof_cylindrical_7",
+        "name": "Cylindrical 7",
         "parameters": [
           {
             "type": 145,
@@ -13786,7 +13786,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MhS1041lOGwmsCW6k",
-        "name": "planar_7",
+        "name": "Planar 7",
         "parameters": [
           {
             "type": 145,
@@ -14573,7 +14573,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M+vQ8L8EZWtcaPunw",
-        "name": "dof_cylindrical_8",
+        "name": "Cylindrical 8",
         "parameters": [
           {
             "type": 145,
@@ -15360,7 +15360,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MNPMUqFO9VCI1KwvI",
-        "name": "planar_8",
+        "name": "Planar 8",
         "parameters": [
           {
             "type": 145,
@@ -16147,7 +16147,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M5z2KOhyvChZInpPt",
-        "name": "planar_9",
+        "name": "Planar 9",
         "parameters": [
           {
             "type": 145,
@@ -16934,7 +16934,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MFsQR2L0GgTDm6KP4",
-        "name": "dof_revolute_5",
+        "name": "Revolute 5",
         "parameters": [
           {
             "type": 145,
@@ -17721,7 +17721,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MnlioDvRLAvEorPb9",
-        "name": "dof_revolute_6",
+        "name": "Revolute 6",
         "parameters": [
           {
             "type": 145,
@@ -18508,7 +18508,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MuxoFr9/1pfuoq4rS",
-        "name": "dof_revolute_7",
+        "name": "Revolute 7",
         "parameters": [
           {
             "type": 145,
@@ -19295,7 +19295,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MklV4lklSu8FGHd8k",
-        "name": "dof_cylindrical_9",
+        "name": "Cylindrical 9",
         "parameters": [
           {
             "type": 145,
@@ -20082,7 +20082,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MgxdSCpd1TTY3xU0e",
-        "name": "planar_10",
+        "name": "Planar 10",
         "parameters": [
           {
             "type": 145,
@@ -20869,7 +20869,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MsE/7iYT/AdEsYMQm",
-        "name": "dof_cylindrical_10",
+        "name": "Cylindrical 10",
         "parameters": [
           {
             "type": 145,
@@ -21656,7 +21656,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MD/y0KhpEbsYzEojp",
-        "name": "planar_11",
+        "name": "Planar 11",
         "parameters": [
           {
             "type": 145,
@@ -22443,7 +22443,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MegfBO+va9sNsABDR",
-        "name": "dof_cylindrical_11",
+        "name": "Cylindrical 11",
         "parameters": [
           {
             "type": 145,
@@ -23230,7 +23230,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MbT7W1FsVAg1Egdqn",
-        "name": "planar_12",
+        "name": "Planar 12",
         "parameters": [
           {
             "type": 145,
@@ -24017,7 +24017,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MizjzMPhZsVDP4xiR",
-        "name": "dof_fastened_4",
+        "name": "Fastened 4",
         "parameters": [
           {
             "type": 145,
@@ -24804,7 +24804,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "Mp2J/q438NIf3Gp/5",
-        "name": "dof_fastened_5",
+        "name": "Fastened 5",
         "parameters": [
           {
             "type": 145,
@@ -25591,7 +25591,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MMKUOWRWtGJgqErSN",
-        "name": "dof_fastened_6",
+        "name": "Fastened 6",
         "parameters": [
           {
             "type": 145,
@@ -26378,7 +26378,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MA7NoUzDErp6PFX9Q",
-        "name": "dof_cylindrical_12",
+        "name": "Cylindrical 12",
         "parameters": [
           {
             "type": 145,
@@ -27165,7 +27165,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MVrz9KBFlUasVb3F2",
-        "name": "dof_revolute_8",
+        "name": "Revolute 8",
         "parameters": [
           {
             "type": 145,
@@ -28739,7 +28739,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MIFIhLxeNp/R4yK2D",
-        "name": "dof_revolute_9",
+        "name": "Revolute 9",
         "parameters": [
           {
             "type": 145,
@@ -29526,7 +29526,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MmMOJK4OhTyZ9tZ2D",
-        "name": "dof_revolute_10",
+        "name": "Revolute 10",
         "parameters": [
           {
             "type": 145,
@@ -30313,7 +30313,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M92FS9YQ3XjEXZtid",
-        "name": "dof_revolute_11",
+        "name": "Revolute 11",
         "parameters": [
           {
             "type": 145,
@@ -31100,7 +31100,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MJ0fufyx2VNfzEpAO",
-        "name": "dof_revolute_12",
+        "name": "Revolute 12",
         "parameters": [
           {
             "type": 145,
@@ -31887,7 +31887,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MzJRtxIwnrH8ei0n8",
-        "name": "dof_revolute_13",
+        "name": "Revolute 13",
         "parameters": [
           {
             "type": 145,
@@ -32674,7 +32674,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MvpTvPs/ov7xhG4IH",
-        "name": "dof_revolute_14",
+        "name": "Revolute 14",
         "parameters": [
           {
             "type": 145,
@@ -33461,7 +33461,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MevQHQeW1vqTsMlFB",
-        "name": "dof_fastened_2",
+        "name": "Fastened 2",
         "parameters": [
           {
             "type": 145,
