@@ -199,11 +199,8 @@ async def get_agent_response(
                             "tool_call": current_tool_call,
                             "event_item": event.item,
                         }
-                        # For testing, auto-approve write operations and continue
-                        approval_response = await handle_tool_approval(call_id, True)
-                        if approval_response["type"] == "tool_observation":
-                            yield approval_response
-                        # Continue processing instead of returning
+                        # Tool call is now pending user approval - don't auto-execute
+                        # The client must call handle_tool_approval() with approval/denial
 
                 elif event.item.type == "tool_call_output_item":
                     # Tool execution completed
@@ -397,6 +394,20 @@ async def get_robot_status(client_id: str) -> Dict[str, Any]:
         "urdf_issues": context.urdf_issues,
         "has_analysis": context.last_analysis is not None,
     }
+
+
+def get_pending_tool_calls(client_id: str) -> List[Dict[str, Any]]:
+    """Get list of pending tool calls for a client"""
+    pending = []
+    for call_id, call_info in pending_tool_calls.items():
+        if call_info["client_id"] == client_id:
+            pending.append({
+                "call_id": call_id,
+                "tool_name": call_info["tool_call"]["name"],
+                "arguments": call_info["tool_call"]["arguments"],
+                "access": call_info["tool_call"]["access"],
+            })
+    return pending
 
 
 if __name__ == "__main__":
