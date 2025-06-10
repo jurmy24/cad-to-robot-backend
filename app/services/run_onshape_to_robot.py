@@ -24,70 +24,126 @@ def run_onshape_to_robot(robot_name: str):
     error_message = ""
 
     try:
-        print("off we go")
-        # TEMPORARILY REMOVED REDIRECTION TO SEE ACTUAL ERROR MESSAGES
-        # with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+        print("🚀 Starting OnShape to Robot conversion...")
         
         # Retrieving robot path
-        print("hi")
         if not robot_name:
             raise Exception("ERROR: you must provide the robot directory")
 
         robot_path: str = robot_name
-        print(f"Processing robot directory: {robot_path}")
+        print(f"📁 Processing robot directory: {robot_path}")
 
-        # Loading configuration
-        print("About to load Config...")
-        config = Config(robot_path)
-        print(f"Loaded configuration for output format: {config.output_format}")
+        # Step 1: Loading configuration
+        print("📋 Loading configuration...")
+        try:
+            config = Config(robot_path)
+            print(f"✅ Loaded configuration for output format: {config.output_format}")
+        except SystemExit as e:
+            error_message = f"SystemExit during Config loading: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Config loading failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"Config loading failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Config loading error: {e}", error_message
 
-        # Building exporter beforehand, so that the configuration gets checked
-        print("About to create exporter...")
-        if config.output_format == "urdf":
-            exporter = ExporterURDF(config)
-        else:
-            raise Exception(f"Unsupported output format: {config.output_format}")
+        # Step 2: Building exporter
+        print("🏗️ Creating exporter...")
+        try:
+            if config.output_format == "urdf":
+                exporter = ExporterURDF(config)
+                print("✅ URDF exporter created successfully")
+            else:
+                raise Exception(f"Unsupported output format: {config.output_format}")
+        except SystemExit as e:
+            error_message = f"SystemExit during exporter creation: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Exporter creation failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"Exporter creation failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Exporter creation error: {e}", error_message
 
-        print("Building robot...")
-        # Building the robot
-        robot_builder = RobotBuilder(config)
-        robot = robot_builder.robot
+        # Step 3: Building robot
+        print("🤖 Building robot model...")
+        try:
+            robot_builder = RobotBuilder(config)
+            robot = robot_builder.robot
+            print("✅ Robot model built successfully")
+        except SystemExit as e:
+            error_message = f"SystemExit during robot building: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Robot building failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"Robot building failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Robot building error: {e}", error_message
 
-        # Can be used for debugging
-        # pickle.dump(robot, open("robot.pkl", "wb"))
-        # robot = pickle.load(open("robot.pkl", "rb"))
+        # Step 4: Applying processors
+        print("⚙️ Applying processors...")
+        try:
+            for i, processor in enumerate(config.processors):
+                print(f"  Processing step {i+1}/{len(config.processors)}: {type(processor).__name__}")
+                processor.process(robot)
+            print("✅ All processors applied successfully")
+        except SystemExit as e:
+            error_message = f"SystemExit during processor application: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Processor application failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"Processor application failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Processor application error: {e}", error_message
 
-        print("Applying processors...")
-        # Applying processors
-        for processor in config.processors:
-            processor.process(robot)
+        # Step 5: Writing URDF
+        print("📝 Writing URDF file...")
+        try:
+            output_path = (
+                config.output_directory
+                + "/"
+                + config.output_filename
+                + "."
+                + exporter.ext
+            )
+            print(f"  Output path: {output_path}")
+            exporter.write_xml(robot, output_path)
+            print("✅ URDF file written successfully")
+        except SystemExit as e:
+            error_message = f"SystemExit during URDF writing: {e}"
+            print(f"❌ {error_message}")
+            return False, f"URDF writing failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"URDF writing failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"URDF writing error: {e}", error_message
 
-        output_path = (
-            config.output_directory
-            + "/"
-            + config.output_filename
-            + "."
-            + exporter.ext
-        )
-        print(f"Writing URDF to: {output_path}")
+        # Step 6: Post-import commands
+        print("🚀 Running post-import commands...")
+        try:
+            for command in config.post_import_commands:
+                print(f"  * Running command: {command}")
+                os.system(command)
+            print("✅ All post-import commands completed")
+        except SystemExit as e:
+            error_message = f"SystemExit during post-import commands: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Post-import commands failed with SystemExit: {e}", error_message
+        except Exception as e:
+            error_message = f"Post-import commands failed: {e}"
+            print(f"❌ {error_message}")
+            return False, f"Post-import commands error: {e}", error_message
 
-        exporter.write_xml(robot, output_path)
-
-        print("Running post-import commands...")
-        for command in config.post_import_commands:
-            print(f"* Running command: {command}")
-            os.system(command)
-
-        print("Robot processing completed successfully!")
-
-        # Get captured logs (will be empty since we removed redirection)
-        logs = "Logs temporarily disabled to debug sys.exit issue"
+        print("🎉 Robot processing completed successfully!")
+        logs = "Conversion completed successfully with detailed error tracking"
         return True, logs, ""
 
+    except SystemExit as e:
+        error_message = f"Unexpected SystemExit: {e}"
+        print(f"❌ {error_message}")
+        return False, f"Process terminated with SystemExit: {e}", error_message
     except Exception as e:
-        # Get captured logs including error
-        print("bye")
-        logs = "Logs temporarily disabled to debug sys.exit issue"
         error_message = str(e)
-        print(f"ERROR: {e}")
-        return False, logs, error_message
+        print(f"❌ Unexpected error: {error_message}")
+        import traceback
+        traceback.print_exc()
+        return False, f"Unexpected error: {error_message}", error_message
