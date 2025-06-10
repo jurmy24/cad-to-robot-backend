@@ -1,0 +1,12 @@
+[project]
+name = "cad-to-robot-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.12",
+    "openai-agents>=0.0.17",
+    "openai>=1.85.0",
+    "python-dotenv>=1.1.0",
+]
