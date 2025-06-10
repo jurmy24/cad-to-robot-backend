@@ -39,6 +39,9 @@ app.add_middleware(
 DATA_DIR = Path("data")
 DATA_DIR.mkdir(exist_ok=True)
 
+# Store active requests for cancellation
+active_requests: Dict[str, asyncio.Task] = {}
+
 
 @app.get("/")
 async def root():
@@ -169,25 +172,25 @@ async def send_urdf_file(client_id: str, robot_name: str = "folding-mechanism"):
         possible_urdf_paths = [
             robot_dir / "robot.urdf",
             robot_dir / f"{robot_name}.urdf",
-            *list(robot_dir.glob("*.urdf"))
+            *list(robot_dir.glob("*.urdf")),
         ]
-        
+
         urdf_path = None
         for path in possible_urdf_paths:
             if path.exists():
                 urdf_path = path
                 break
-        
+
         if urdf_path and urdf_path.exists():
-            with open(urdf_path, 'r', encoding='utf-8') as f:
+            with open(urdf_path, "r", encoding="utf-8") as f:
                 urdf_content = f.read()
-            
+
             urdf_response = {
                 "type": "urdf_file",
                 "urdf_content": urdf_content,
                 "file_path": str(urdf_path.relative_to(DATA_DIR)),
                 "timestamp": datetime.now().isoformat(),
-                "sender": "system"
+                "sender": "system",
             }
             await manager.send_personal_message(json.dumps(urdf_response), client_id)
         else:
@@ -196,18 +199,69 @@ async def send_urdf_file(client_id: str, robot_name: str = "folding-mechanism"):
                 "type": "urdf_error",
                 "content": f"URDF file not found in {robot_dir}",
                 "timestamp": datetime.now().isoformat(),
-                "sender": "system"
+                "sender": "system",
             }
             await manager.send_personal_message(json.dumps(error_response), client_id)
-    
+
     except Exception as e:
         error_response = {
-            "type": "urdf_error", 
+            "type": "urdf_error",
             "content": f"Error reading URDF file: {str(e)}",
             "timestamp": datetime.now().isoformat(),
-            "sender": "system"
+            "sender": "system",
         }
         await manager.send_personal_message(json.dumps(error_response), client_id)
+
+
+async def handle_agent_request(message: str, client_id: str, request_id: str):
+    """Handle agent request with cancellation support"""
+    try:
+        async for response in get_agent_response(message, client_id):
+            # Check if request was cancelled
+            if request_id not in active_requests:
+                print(f"Request {request_id} was cancelled")
+                return
+
+            await manager.send_personal_message(json.dumps(response), client_id)
+
+            # Check if this was a successful tool observation for URDF-modifying tools
+            if response.get("type") == "tool_observation" and "✅" in response.get(
+                "tool_observation", {}
+            ).get("output", ""):
+                output = response.get("tool_observation", {}).get("output", "")
+                # Check if any URDF-modifying operations completed successfully
+                if any(
+                    keyword in output.lower()
+                    for keyword in [
+                        "onshape",
+                        "conversion completed",
+                        "duplicate",
+                        "removed",
+                        "material",
+                        "urdf",
+                        "robot processing completed",
+                    ]
+                ):
+                    await send_urdf_file(client_id)
+    except asyncio.CancelledError:
+        print(f"Agent request {request_id} was cancelled")
+        # Send cancellation confirmation
+        cancellation_response = {
+            "type": "cancellation_confirmed",
+            "content": "Request cancelled",
+            "timestamp": datetime.now().isoformat(),
+            "sender": "assistant",
+            "request_id": request_id,
+        }
+        await manager.send_personal_message(
+            json.dumps(cancellation_response), client_id
+        )
+    except Exception as e:
+        print(f"Error in agent request {request_id}: {e}")
+    finally:
+        # Clean up active request
+        if request_id in active_requests:
+            del active_requests[request_id]
 
 
 @app.websocket("/ws/{client_id}")
@@ -218,6 +272,16 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             data = await websocket.receive_text()
             message_data = json.loads(data)
 
+            # Handle cancellation requests
+            if message_data.get("type") == "cancel_request":
+                request_id = message_data.get("request_id")
+                if request_id and request_id in active_requests:
+                    # Cancel the task
+                    task = active_requests[request_id]
+                    task.cancel()
+                    print(f"Cancelled request {request_id}")
+                continue
+
             # Handle tool approval responses
             if message_data.get("type") == "tool_approval_response":
                 call_id = message_data.get("call_id")
@@ -226,42 +290,68 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                 if call_id:
                     response = await handle_tool_approval(call_id, approved)
                     await manager.send_personal_message(json.dumps(response), client_id)
-                    
+
                     # Check if this was a URDF-modifying tool that succeeded
-                    if (approved and response.get("type") == "tool_observation" and 
-                        response.get("tool_observation", {}).get("output", "").startswith("✅")):
-                        
+                    if (
+                        approved
+                        and response.get("type") == "tool_observation"
+                        and response.get("tool_observation", {})
+                        .get("output", "")
+                        .startswith("✅")
+                    ):
                         # Extract tool name from the response (this is a bit hacky, but works)
                         output = response.get("tool_observation", {}).get("output", "")
-                        urdf_modifying_tools = ["run_onshape_conversion", "remove_duplicate_links", "set_material", "set_multiple_materials"]
-                        
+                        urdf_modifying_tools = [
+                            "run_onshape_conversion",
+                            "remove_duplicate_links",
+                            "set_material",
+                            "set_multiple_materials",
+                        ]
+
                         # Check if any of the URDF-modifying tools were mentioned in the output
                         for tool_name in urdf_modifying_tools:
-                            if any(keyword in output.lower() for keyword in [
-                                "onshape", "conversion", "duplicate", "material", "urdf"
-                            ]):
+                            if any(
+                                keyword in output.lower()
+                                for keyword in [
+                                    "onshape",
+                                    "conversion",
+                                    "duplicate",
+                                    "material",
+                                    "urdf",
+                                ]
+                            ):
                                 await send_urdf_file(client_id)
                                 break
             else:
-                # Use agent responses for regular messages
-                async for response in get_agent_response(
-                    message_data.get("content", ""), client_id
-                ):
-                    await manager.send_personal_message(json.dumps(response), client_id)
-                    
-                    # Check if this was a successful tool observation for URDF-modifying tools
-                    if (response.get("type") == "tool_observation" and 
-                        "✅" in response.get("tool_observation", {}).get("output", "")):
-                        
-                        output = response.get("tool_observation", {}).get("output", "")
-                        # Check if any URDF-modifying operations completed successfully
-                        if any(keyword in output.lower() for keyword in [
-                            "onshape", "conversion completed", "duplicate", "removed", 
-                            "material", "urdf", "robot processing completed"
-                        ]):
-                            await send_urdf_file(client_id)
+                # Handle regular messages with request ID
+                request_id = message_data.get(
+                    "request_id", f"req_{datetime.now().timestamp()}"
+                )
+                message_content = message_data.get("content", "")
+
+                # Create and store the task for potential cancellation
+                task = asyncio.create_task(
+                    handle_agent_request(message_content, client_id, request_id)
+                )
+                active_requests[request_id] = task
+
+                # Wait for the task to complete or be cancelled
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    # Task was cancelled, cleanup is handled in handle_agent_request
+                    pass
 
     except WebSocketDisconnect:
+        # Cancel all active requests for this client
+        tasks_to_cancel = [
+            task
+            for request_id, task in active_requests.items()
+            # You might want to associate request_id with client_id if needed
+        ]
+        for task in tasks_to_cancel:
+            task.cancel()
+
         manager.disconnect(client_id)
         await manager.broadcast(
             json.dumps(
