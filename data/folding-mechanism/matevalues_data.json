@@ -12,7 +12,7 @@
       "translationX": 1.1688924765111527e-15,
       "translationY": -0.0028576739680753025,
       "rotationZ": -1.5695517023522054,
-      "mateName": "Planar 2",
+      "mateName": "dof_planar_2",
       "featureId": "M/yz/o5t1MiMYqRnN"
     },
     {
@@ -20,7 +20,7 @@
       "translationX": -0.12118139742328521,
       "translationY": -0.07010755250714013,
       "rotationZ": -0.6099779326766068,
-      "mateName": "Planar 9",
+      "mateName": "dof_planar_9",
       "featureId": "M5z2KOhyvChZInpPt"
     },
     {
@@ -48,7 +48,7 @@
       "translationX": 0.13181005761419323,
       "translationY": -0.04718165651760017,
       "rotationZ": 0.7907227623496409,
-      "mateName": "Planar 3",
+      "mateName": "dof_planar_3",
       "featureId": "MBJDJi3s+Flj8Zomn"
     },
     {
@@ -56,7 +56,7 @@
       "translationX": 0.13181005761419343,
       "translationY": 0.04718165651760075,
       "rotationZ": -0.7907227623496418,
-      "mateName": "Planar 4",
+      "mateName": "dof_planar_4",
       "featureId": "MCBhqwFkfvCRh6Mzj"
     },
     {
@@ -64,7 +64,7 @@
       "translationX": 0.00019232668990953511,
       "translationY": -0.007399247621154398,
       "rotationZ": 0.02598688460004545,
-      "mateName": "Planar 11",
+      "mateName": "dof_planar_11",
       "featureId": "MD/y0KhpEbsYzEojp"
     },
     {
@@ -72,7 +72,7 @@
       "translationX": 4.85722573273506e-17,
       "translationY": -0.0036935691623536443,
       "rotationZ": -0.4100592213701866,
-      "mateName": "Planar 1",
+      "mateName": "dof_planar_1",
       "featureId": "MDVJHCy2qZD0Ksk8R"
     },
     {
@@ -124,7 +124,7 @@
       "translationX": 0.002113091308703652,
       "translationY": -0.004531538935183498,
       "rotationZ": -0.6099779326766068,
-      "mateName": "Planar 8",
+      "mateName": "dof_planar_8",
       "featureId": "MNPMUqFO9VCI1KwvI"
     },
     {
@@ -151,7 +151,7 @@
       "translationX": -0.0036063668040911636,
       "translationY": 0.0019081336341669642,
       "rotationZ": 0.021649896524858478,
-      "mateName": "Planar 6",
+      "mateName": "dof_planar_6",
       "featureId": "MU3wvFRuLWFizSxAP"
     },
     {
@@ -165,7 +165,7 @@
       "translationX": 1.2212453270876722e-15,
       "translationY": -0.0074017467475459495,
       "rotationZ": -2.6645352591003757e-15,
-      "mateName": "Planar 12",
+      "mateName": "dof_planar_12",
       "featureId": "MbT7W1FsVAg1Egdqn"
     },
     {
@@ -187,7 +187,7 @@
       "translationX": -4.26743923065723e-05,
       "translationY": -0.007401623728010749,
       "rotationZ": -0.005765480795815847,
-      "mateName": "Planar 10",
+      "mateName": "dof_planar_10",
       "featureId": "MgxdSCpd1TTY3xU0e"
     },
     {
@@ -195,7 +195,7 @@
       "translationX": 0.006807274107422155,
       "translationY": -0.011236074192499612,
       "rotationZ": -0.08457012245104956,
-      "mateName": "Planar 7",
+      "mateName": "dof_planar_7",
       "featureId": "MhS1041lOGwmsCW6k"
     },
     {
@@ -203,7 +203,7 @@
       "translationX": -0.0039072592386762495,
       "translationY": -0.003119827758351047,
       "rotationZ": -0.11159108302590504,
-      "mateName": "Planar 5",
+      "mateName": "dof_planar_5",
       "featureId": "MjbcIQtH3a3ujSs4S"
     },
     {

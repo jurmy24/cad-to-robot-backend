@@ -407,7 +407,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MHRrmLLu/sXH5D6pQ",
-        "name": "Revolute 1",
+        "name": "dof_revolute_1",
         "parameters": [
           {
             "type": 145,
@@ -1194,7 +1194,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MJ6Iyok2BVHbHwvZw",
-        "name": "Cylindrical 1",
+        "name": "dof_cylindrical_1",
         "parameters": [
           {
             "type": 145,
@@ -2768,7 +2768,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MRpd4fxAHp7sRCR1Z",
-        "name": "Revolute 2",
+        "name": "dof_revolute_2",
         "parameters": [
           {
             "type": 145,
@@ -3555,7 +3555,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MPD/L8M6tj1WAILHp",
-        "name": "Cylindrical 2",
+        "name": "dof_cylindrical_2",
         "parameters": [
           {
             "type": 145,
@@ -5129,7 +5129,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MNCi4eJCbm4pptyC3",
-        "name": "Revolute 3",
+        "name": "dof_revolute_3",
         "parameters": [
           {
             "type": 145,
@@ -5916,7 +5916,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "Mol4IWiiK3f6RHq8j",
-        "name": "Cylindrical 3",
+        "name": "dof_cylindrical_3",
         "parameters": [
           {
             "type": 145,
@@ -7490,7 +7490,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MtVXJcqMIvZYQy8jO",
-        "name": "Cylindrical 4",
+        "name": "dof_cylindrical_4",
         "parameters": [
           {
             "type": 145,
@@ -9064,7 +9064,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MR/xrk+shiiKkdViy",
-        "name": "Revolute 4",
+        "name": "dof_revolute_4",
         "parameters": [
           {
             "type": 145,
@@ -9851,7 +9851,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MAagLPUKF84+FDvWq",
-        "name": "Cylindrical 5",
+        "name": "dof_cylindrical_5",
         "parameters": [
           {
             "type": 145,
@@ -11425,7 +11425,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MKJVpqhs0L6gasWlV",
-        "name": "Cylindrical 6",
+        "name": "dof_cylindrical_6",
         "parameters": [
           {
             "type": 145,
@@ -12999,7 +12999,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MeUmvhVJ6JAz9MIGX",
-        "name": "Cylindrical 7",
+        "name": "dof_cylindrical_7",
         "parameters": [
           {
             "type": 145,
@@ -14573,7 +14573,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M+vQ8L8EZWtcaPunw",
-        "name": "Cylindrical 8",
+        "name": "dof_cylindrical_8",
         "parameters": [
           {
             "type": 145,
@@ -16934,7 +16934,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MFsQR2L0GgTDm6KP4",
-        "name": "Revolute 5",
+        "name": "dof_revolute_5",
         "parameters": [
           {
             "type": 145,
@@ -17721,7 +17721,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MnlioDvRLAvEorPb9",
-        "name": "Revolute 6",
+        "name": "dof_revolute_6",
         "parameters": [
           {
             "type": 145,
@@ -18508,7 +18508,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MuxoFr9/1pfuoq4rS",
-        "name": "Revolute 7",
+        "name": "dof_revolute_7",
         "parameters": [
           {
             "type": 145,
@@ -19295,7 +19295,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MklV4lklSu8FGHd8k",
-        "name": "Cylindrical 9",
+        "name": "dof_cylindrical_9",
         "parameters": [
           {
             "type": 145,
@@ -20869,7 +20869,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MsE/7iYT/AdEsYMQm",
-        "name": "Cylindrical 10",
+        "name": "dof_cylindrical_10",
         "parameters": [
           {
             "type": 145,
@@ -22443,7 +22443,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MegfBO+va9sNsABDR",
-        "name": "Cylindrical 11",
+        "name": "dof_cylindrical_11",
         "parameters": [
           {
             "type": 145,
@@ -26378,7 +26378,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MA7NoUzDErp6PFX9Q",
-        "name": "Cylindrical 12",
+        "name": "dof_cylindrical_12",
         "parameters": [
           {
             "type": 145,
@@ -27165,7 +27165,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MVrz9KBFlUasVb3F2",
-        "name": "Revolute 8",
+        "name": "dof_revolute_8",
         "parameters": [
           {
             "type": 145,
@@ -28739,7 +28739,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MIFIhLxeNp/R4yK2D",
-        "name": "Revolute 9",
+        "name": "dof_revolute_9",
         "parameters": [
           {
             "type": 145,
@@ -29526,7 +29526,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MmMOJK4OhTyZ9tZ2D",
-        "name": "Revolute 10",
+        "name": "dof_revolute_10",
         "parameters": [
           {
             "type": 145,
@@ -30313,7 +30313,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M92FS9YQ3XjEXZtid",
-        "name": "Revolute 11",
+        "name": "dof_revolute_11",
         "parameters": [
           {
             "type": 145,
@@ -31100,7 +31100,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MJ0fufyx2VNfzEpAO",
-        "name": "Revolute 12",
+        "name": "dof_revolute_12",
         "parameters": [
           {
             "type": 145,
@@ -31887,7 +31887,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MzJRtxIwnrH8ei0n8",
-        "name": "Revolute 13",
+        "name": "dof_revolute_13",
         "parameters": [
           {
             "type": 145,
@@ -32674,7 +32674,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MvpTvPs/ov7xhG4IH",
-        "name": "Revolute 14",
+        "name": "dof_revolute_14",
         "parameters": [
           {
             "type": 145,

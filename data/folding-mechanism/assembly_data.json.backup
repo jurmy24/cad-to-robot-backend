@@ -766,7 +766,7 @@
               }
             }
           ],
-          "name": "Revolute 1"
+          "name": "dof_revolute_1"
         }
       },
       {
@@ -831,7 +831,7 @@
               }
             }
           ],
-          "name": "Cylindrical 1"
+          "name": "dof_cylindrical_1"
         }
       },
       {
@@ -961,7 +961,7 @@
               }
             }
           ],
-          "name": "Revolute 2"
+          "name": "dof_revolute_2"
         }
       },
       {
@@ -1026,7 +1026,7 @@
               }
             }
           ],
-          "name": "Cylindrical 2"
+          "name": "dof_cylindrical_2"
         }
       },
       {
@@ -1156,7 +1156,7 @@
               }
             }
           ],
-          "name": "Revolute 3"
+          "name": "dof_revolute_3"
         }
       },
       {
@@ -1221,7 +1221,7 @@
               }
             }
           ],
-          "name": "Cylindrical 3"
+          "name": "dof_cylindrical_3"
         }
       },
       {
@@ -1351,7 +1351,7 @@
               }
             }
           ],
-          "name": "Cylindrical 4"
+          "name": "dof_cylindrical_4"
         }
       },
       {
@@ -1481,7 +1481,7 @@
               }
             }
           ],
-          "name": "Revolute 4"
+          "name": "dof_revolute_4"
         }
       },
       {
@@ -1546,7 +1546,7 @@
               }
             }
           ],
-          "name": "Cylindrical 5"
+          "name": "dof_cylindrical_5"
         }
       },
       {
@@ -1676,7 +1676,7 @@
               }
             }
           ],
-          "name": "Cylindrical 6"
+          "name": "dof_cylindrical_6"
         }
       },
       {
@@ -1806,7 +1806,7 @@
               }
             }
           ],
-          "name": "Cylindrical 7"
+          "name": "dof_cylindrical_7"
         }
       },
       {
@@ -1936,7 +1936,7 @@
               }
             }
           ],
-          "name": "Cylindrical 8"
+          "name": "dof_cylindrical_8"
         }
       },
       {
@@ -2131,7 +2131,7 @@
               }
             }
           ],
-          "name": "Revolute 5"
+          "name": "dof_revolute_5"
         }
       },
       {
@@ -2196,7 +2196,7 @@
               }
             }
           ],
-          "name": "Revolute 6"
+          "name": "dof_revolute_6"
         }
       },
       {
@@ -2261,7 +2261,7 @@
               }
             }
           ],
-          "name": "Revolute 7"
+          "name": "dof_revolute_7"
         }
       },
       {
@@ -2326,7 +2326,7 @@
               }
             }
           ],
-          "name": "Cylindrical 9"
+          "name": "dof_cylindrical_9"
         }
       },
       {
@@ -2456,7 +2456,7 @@
               }
             }
           ],
-          "name": "Cylindrical 10"
+          "name": "dof_cylindrical_10"
         }
       },
       {
@@ -2586,7 +2586,7 @@
               }
             }
           ],
-          "name": "Cylindrical 11"
+          "name": "dof_cylindrical_11"
         }
       },
       {
@@ -2911,7 +2911,7 @@
               }
             }
           ],
-          "name": "Cylindrical 12"
+          "name": "dof_cylindrical_12"
         }
       },
       {
@@ -2976,7 +2976,7 @@
               }
             }
           ],
-          "name": "Revolute 8"
+          "name": "dof_revolute_8"
         }
       },
       {
@@ -3106,7 +3106,7 @@
               }
             }
           ],
-          "name": "Revolute 9"
+          "name": "dof_revolute_9"
         }
       },
       {
@@ -3171,7 +3171,7 @@
               }
             }
           ],
-          "name": "Revolute 10"
+          "name": "dof_revolute_10"
         }
       },
       {
@@ -3236,7 +3236,7 @@
               }
             }
           ],
-          "name": "Revolute 11"
+          "name": "dof_revolute_11"
         }
       },
       {
@@ -3301,7 +3301,7 @@
               }
             }
           ],
-          "name": "Revolute 12"
+          "name": "dof_revolute_12"
         }
       },
       {
@@ -3366,7 +3366,7 @@
               }
             }
           ],
-          "name": "Revolute 13"
+          "name": "dof_revolute_13"
         }
       },
       {
@@ -3431,7 +3431,7 @@
               }
             }
           ],
-          "name": "Revolute 14"
+          "name": "dof_revolute_14"
         }
       },
       {
