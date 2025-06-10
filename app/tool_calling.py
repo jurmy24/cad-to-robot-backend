@@ -1,6 +1,5 @@
 from typing import Dict
 from agents import RunContextWrapper, function_tool
-from app.agent import AirlineAgentContext
 from app.tools.read_urdf import read_urdf
 from app.tools.remove_duplicate_links import remove_duplicate_links
 from app.tools.rename_mates import rename_mates
@@ -181,7 +180,6 @@ async def faq_lookup_tool(question: str) -> str:
 
 @function_tool
 async def update_seat(
-    context: RunContextWrapper[AirlineAgentContext],
     confirmation_number: str,
     new_seat: str,
 ) -> str:
@@ -193,11 +191,11 @@ async def update_seat(
         new_seat: The new seat to update to.
     """
     # Update the context based on the customer's input
-    context.context.confirmation_number = confirmation_number
-    context.context.seat_number = new_seat
-    # Generate a flight number if not set
-    if context.context.flight_number is None:
-        import random
+    # context.context.confirmation_number = confirmation_number
+    # context.context.seat_number = new_seat
+    # # Generate a flight number if not set
+    # if context.context.flight_number is None:
+    #     import random
 
-        context.context.flight_number = f"FLT-{random.randint(100, 999)}"
+    #     context.context.flight_number = f"FLT-{random.randint(100, 999)}"
     return f"Updated seat to {new_seat} for confirmation number {confirmation_number}"
