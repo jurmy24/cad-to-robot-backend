@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "commentjson>=0.9.0",
     "fastapi>=0.115.12",
+    "numpy-stl>=3.2.0",
     "numpy>=2.3.0",
     "openai-agents>=0.0.17",
     "openai>=1.85.0",

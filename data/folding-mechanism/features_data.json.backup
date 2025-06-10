@@ -1981,7 +1981,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MDVJHCy2qZD0Ksk8R",
-        "name": "Planar 1",
+        "name": "dof_planar_1",
         "parameters": [
           {
             "type": 145,
@@ -4342,7 +4342,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M/yz/o5t1MiMYqRnN",
-        "name": "Planar 2",
+        "name": "dof_planar_2",
         "parameters": [
           {
             "type": 145,
@@ -6703,7 +6703,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MBJDJi3s+Flj8Zomn",
-        "name": "Planar 3",
+        "name": "dof_planar_3",
         "parameters": [
           {
             "type": 145,
@@ -8277,7 +8277,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MCBhqwFkfvCRh6Mzj",
-        "name": "Planar 4",
+        "name": "dof_planar_4",
         "parameters": [
           {
             "type": 145,
@@ -10638,7 +10638,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MjbcIQtH3a3ujSs4S",
-        "name": "Planar 5",
+        "name": "dof_planar_5",
         "parameters": [
           {
             "type": 145,
@@ -12212,7 +12212,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MU3wvFRuLWFizSxAP",
-        "name": "Planar 6",
+        "name": "dof_planar_6",
         "parameters": [
           {
             "type": 145,
@@ -13786,7 +13786,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MhS1041lOGwmsCW6k",
-        "name": "Planar 7",
+        "name": "dof_planar_7",
         "parameters": [
           {
             "type": 145,
@@ -15360,7 +15360,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MNPMUqFO9VCI1KwvI",
-        "name": "Planar 8",
+        "name": "dof_planar_8",
         "parameters": [
           {
             "type": 145,
@@ -16147,7 +16147,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "M5z2KOhyvChZInpPt",
-        "name": "Planar 9",
+        "name": "dof_planar_9",
         "parameters": [
           {
             "type": 145,
@@ -20082,7 +20082,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MgxdSCpd1TTY3xU0e",
-        "name": "Planar 10",
+        "name": "dof_planar_10",
         "parameters": [
           {
             "type": 145,
@@ -21656,7 +21656,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MD/y0KhpEbsYzEojp",
-        "name": "Planar 11",
+        "name": "dof_planar_11",
         "parameters": [
           {
             "type": 145,
@@ -23230,7 +23230,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MbT7W1FsVAg1Egdqn",
-        "name": "Planar 12",
+        "name": "dof_planar_12",
         "parameters": [
           {
             "type": 145,
@@ -24017,7 +24017,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MizjzMPhZsVDP4xiR",
-        "name": "Fastened 4",
+        "name": "dof_fastened_4",
         "parameters": [
           {
             "type": 145,
@@ -24804,7 +24804,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "Mp2J/q438NIf3Gp/5",
-        "name": "Fastened 5",
+        "name": "dof_fastened_5",
         "parameters": [
           {
             "type": 145,
@@ -25591,7 +25591,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MMKUOWRWtGJgqErSN",
-        "name": "Fastened 6",
+        "name": "dof_fastened_6",
         "parameters": [
           {
             "type": 145,
@@ -33461,7 +33461,7 @@
         "version": 2,
         "featureType": "mate",
         "featureId": "MevQHQeW1vqTsMlFB",
-        "name": "Fastened 2",
+        "name": "dof_fastened_2",
         "parameters": [
           {
             "type": 145,
