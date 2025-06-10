@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from typing import Dict, List, Any, AsyncGenerator
 from agents import TResponseInputItem
 from datetime import datetime
+import json
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Agent imports
 from agents import (
@@ -12,53 +17,74 @@ from agents import (
 )
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 from openai.types.responses import ResponseTextDeltaEvent
-from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 
-# Own imports
-from app.tool_calling import faq_lookup_tool, update_seat
-
-
-# Agent context definition
-class AirlineAgentContext(BaseModel):
-    passenger_name: str | None = None
-    confirmation_number: str | None = None
-    seat_number: str | None = None
-    flight_number: str | None = None
+# Import CAD to URDF tools
+from app.augmented_tools.read_mates import read_mates
+from app.augmented_tools.read_urdf import read_urdf
+from app.augmented_tools.rename_mates import rename_mates
+from app.augmented_tools.remove_duplicate_links import remove_duplicate_links
+from app.augmented_tools.set_material import set_material, set_multiple_materials
 
 
-# Initialize the agent
-triage_agent = Agent[AirlineAgentContext](
-    name="Triage Agent",
-    handoff_description="A helpful agent that can handle all airline-related requests.",
+# Agent context definition for CAD to URDF operations
+class CADtoURDFContext(BaseModel):
+    robot_name: str | None = None
+    current_mates: List[str] = []
+    pending_renames: Dict[str, str] = {}
+    urdf_issues: List[str] = []
+    last_analysis: str | None = None
+
+
+def load_system_prompt() -> str:
+    """Load the system prompt from system_prompts.txt"""
+    try:
+        with open("system_prompts.txt", "r") as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return "You are a CAD to URDF conversion assistant."
+
+
+# Initialize the CAD to URDF agent
+cad_agent = Agent[CADtoURDFContext](
+    name="CAD to URDF Agent",
+    handoff_description="An intelligent assistant that specializes in converting OnShape assemblies to simulation-ready URDF files.",
     instructions=(
         f"{RECOMMENDED_PROMPT_PREFIX} "
-        "You are a helpful airline assistant that can handle all customer requests. "
-        "You have access to tools for both answering questions and updating seat bookings. "
-        "Before using any tool, you MUST explain to the customer what you're going to do. "
+        f"{load_system_prompt()} "
+        "\n\nThe robot name you should work with is: folding-mechanism "
+        "\n\nBefore using any tool, you MUST explain to the user what you're going to do. "
         "For example: "
-        "- Before using the FAQ tool: 'Let me look up that information for you about our baggage policy.' "
-        "- Before using the seat update tool: 'I'll help you update your seat. I'll need your confirmation number and desired seat number.' "
-        "Always be friendly and professional in your explanations. "
-        "If you need more information from the customer, ask for it clearly and explain why you need it."
+        "- Before reading mates: 'Let me analyze the current mate names in your assembly.' "
+        "- Before renaming mates: 'I'll update the mate names to use proper dof_ prefixes for joint recognition.' "
+        "- Before removing duplicates: 'I'll identify and remove duplicate links from your URDF file.' "
+        "- Before setting materials: 'I'll update the visual appearance of the specified links.' "
+        "Always explain what changes you're making and why they're necessary for proper URDF conversion. "
+        "Use the ReAct framework: Think, Act, Observe, Reflect."
     ),
-    tools=[faq_lookup_tool, update_seat],
+    tools=[read_mates, read_urdf, rename_mates, remove_duplicate_links, set_material, set_multiple_materials],
 )
 
 # Store conversation context and pending tool calls
-conversation_contexts: Dict[str, AirlineAgentContext] = {}
+conversation_contexts: Dict[str, CADtoURDFContext] = {}
 conversation_history: Dict[str, List[TResponseInputItem]] = {}
 pending_tool_calls: Dict[str, Dict[str, Any]] = {}
+
+
+def get_tool_access_level(tool_name: str) -> str:
+    """Determine if a tool requires approval (write) or can run immediately (read)"""
+    write_tools = {"rename_mates", "remove_duplicate_links", "set_material", "set_multiple_materials"}
+    return "write" if tool_name in write_tools else "read"
 
 
 async def get_agent_response(
     message: str, client_id: str
 ) -> AsyncGenerator[Dict[str, Any], None]:
     """
-    Get response from the actual agent system and format it for WebSocket.
+    Get response from the CAD to URDF agent system and format it for WebSocket.
     """
     # Initialize context and history for this client if not exists
     if client_id not in conversation_contexts:
-        conversation_contexts[client_id] = AirlineAgentContext()
+        conversation_contexts[client_id] = CADtoURDFContext(robot_name="folding-mechanism")
         conversation_history[client_id] = []
 
     context = conversation_contexts[client_id]
@@ -69,7 +95,7 @@ async def get_agent_response(
 
     try:
         # Run the agent
-        result = Runner.run_streamed(triage_agent, history, context=context)
+        result = Runner.run_streamed(cad_agent, history, context=context)
 
         current_streaming_content = ""
         current_tool_call = None
@@ -99,7 +125,7 @@ async def get_agent_response(
                     call_id = getattr(tool_call, "id", str(hash(str(tool_call))))
 
                     # Determine access level
-                    access = "write" if tool_name == "update_seat" else "read"
+                    access = get_tool_access_level(tool_name)
 
                     current_tool_call = {
                         "name": tool_name,
@@ -128,6 +154,11 @@ async def get_agent_response(
                 elif event.item.type == "tool_call_output_item":
                     # Tool execution completed
                     if current_tool_call:
+                        # Update context based on tool results
+                        await update_context_from_tool_result(
+                            context, current_tool_call["name"], event.item.output
+                        )
+                        
                         yield {
                             "type": "tool_observation",
                             "tool_observation": {
@@ -158,10 +189,31 @@ async def get_agent_response(
     except Exception as e:
         yield {
             "type": "error",
-            "content": f"Error processing request: {str(e)}",
+            "content": f"Error processing CAD to URDF request: {str(e)}",
             "timestamp": datetime.now().isoformat(),
             "sender": "system",
         }
+
+
+async def update_context_from_tool_result(context: CADtoURDFContext, tool_name: str, output: str):
+    """Update the context based on tool execution results"""
+    if tool_name == "read_mates":
+        # Extract mate names from the output
+        if "ROBOT MATE NAMES" in output:
+            context.last_analysis = output
+            # Could parse mate names from output if needed
+    elif tool_name == "read_urdf":
+        # Store URDF analysis
+        context.last_analysis = output
+    elif tool_name == "rename_mates":
+        # Clear pending renames if successful
+        if "✅" in output:
+            context.pending_renames = {}
+    elif tool_name in ["remove_duplicate_links", "set_material", "set_multiple_materials"]:
+        # Record that modifications were made
+        if "✅" in output:
+            if "issues" not in [issue.lower() for issue in context.urdf_issues]:
+                context.urdf_issues.append(f"Modified with {tool_name}")
 
 
 async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
@@ -179,17 +231,38 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
     tool_info = pending_tool_calls[call_id]
 
     if approved:
-        # Execute the tool (simulate the execution result)
+        # Execute the tool - simulate the execution result for now
         tool_name = tool_info["tool_call"]["name"]
+        args = tool_info["tool_call"]["arguments"]
 
-        if tool_name == "update_seat":
-            # Simulate successful seat update
-            args = tool_info["tool_call"]["arguments"]
-            confirmation = args.get("confirmation_number", "ABC123")
-            new_seat = args.get("new_seat", "12A")
-            output = f"Successfully updated seat to {new_seat} for confirmation {confirmation}"
+        if tool_name == "rename_mates":
+            robot_name = args.get("robot_name", "folding-mechanism")
+            rename_mapping = args.get("rename_mapping_json", "{}")
+            output = f"✅ Mate renaming completed successfully for {robot_name}!\nRename mapping applied: {rename_mapping}"
+            
+        elif tool_name == "remove_duplicate_links":
+            robot_name = args.get("robot_name", "folding-mechanism")
+            output = f"✅ Successfully removed duplicate links from {robot_name}/robot.urdf\nBackup created and URDF file updated."
+            
+        elif tool_name == "set_material":
+            robot_name = args.get("robot_name", "folding-mechanism")
+            link_name = args.get("link_name", "unknown")
+            rgba = args.get("rgba", "1 0 0 1")
+            output = f"✅ Material set successfully for link '{link_name}'\nRobot: {robot_name}\nRGBA color: {rgba}"
+            
+        elif tool_name == "set_multiple_materials":
+            robot_name = args.get("robot_name", "folding-mechanism")
+            output = f"✅ Materials set successfully for multiple links in {robot_name}\nBackup created and URDF file updated."
+            
         else:
             output = f"Tool {tool_name} executed successfully"
+
+        # Update context
+        client_id = tool_info["client_id"]
+        if client_id in conversation_contexts:
+            await update_context_from_tool_result(
+                conversation_contexts[client_id], tool_name, output
+            )
 
         # Clean up pending call
         del pending_tool_calls[call_id]
@@ -206,7 +279,172 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
 
         return {
             "type": "tool_rejected",
-            "content": f"Tool execution was rejected by user",
+            "content": f"CAD to URDF tool execution was rejected by user",
             "timestamp": datetime.now().isoformat(),
             "sender": "system",
         }
+
+
+# Additional helper function for getting robot status
+async def get_robot_status(client_id: str) -> Dict[str, Any]:
+    """Get current status of the robot conversion process"""
+    if client_id not in conversation_contexts:
+        return {"error": "No active session found"}
+    
+    context = conversation_contexts[client_id]
+    return {
+        "robot_name": context.robot_name,
+        "current_mates": context.current_mates,
+        "pending_renames": context.pending_renames,
+        "urdf_issues": context.urdf_issues,
+        "has_analysis": context.last_analysis is not None,
+    }
+
+
+if __name__ == "__main__":
+    import asyncio
+    import os
+    from app.services.run_onshape_to_robot import run_onshape_to_robot
+    
+    async def test_agent():
+        """Test the CAD to URDF agent with folding-mechanism data"""
+        # Change to parent directory so tools can find data/ folder
+        original_cwd = os.getcwd()
+        if os.path.basename(os.getcwd()) == "app":
+            os.chdir("..")
+            print(f"Changed directory from {original_cwd} to {os.getcwd()}")
+        
+        robot_name = "folding-mechanism"
+        test_client_id = "test_client"
+        
+        print("🤖 CAD to URDF Agent Demo")
+        print("=" * 60)
+        print(f"Robot: {robot_name}")
+        print(f"Data directory: data/{robot_name}")
+        print(f"Current working directory: {os.getcwd()}")
+        print("=" * 60)
+        
+        # Step 1: Initial agent analysis
+        print("\n🧠 Step 1: Agent Initial Analysis...")
+        print("-" * 40)
+        
+        initial_message = "Please analyze the folding-mechanism robot assembly. Start by reading the current mates to understand the joint structure, then examine the existing URDF file to identify any issues."
+        
+        await run_agent_interaction(test_client_id, initial_message, "Initial Analysis")
+        
+        # Step 2: Run OnShape to Robot conversion
+        print("\n🔧 Step 2: Running OnShape to Robot conversion...")
+        print("-" * 40)
+        
+        print("Calling run_onshape_to_robot... (this may take a while)")
+        
+        # Run in subprocess to avoid sys.exit() calls terminating our main process
+        import subprocess
+        import sys
+        
+        try:
+            # Create a subprocess to run the onshape conversion
+            result = subprocess.run([
+                sys.executable, "-c", 
+                f"""
+import sys
+sys.path.append('.')
+from app.services.run_onshape_to_robot import run_onshape_to_robot
+success, logs, error_message = run_onshape_to_robot('data/{robot_name}')
+print(f'SUCCESS:{{success}}')
+print(f'LOGS:{{logs}}')
+print(f'ERROR:{{error_message}}')
+"""
+            ], capture_output=True, text=True, timeout=300)  # 5 minute timeout
+            
+            # Parse the output
+            output_lines = result.stdout.split('\n')
+            success = False
+            logs = ""
+            error_message = ""
+            
+            for line in output_lines:
+                if line.startswith('SUCCESS:'):
+                    success = line.split('SUCCESS:')[1].strip() == 'True'
+                elif line.startswith('LOGS:'):
+                    logs = line.split('LOGS:')[1]
+                elif line.startswith('ERROR:'):
+                    error_message = line.split('ERROR:')[1]
+            
+            # Also capture any stderr output
+            if result.stderr:
+                logs += f"\nStderr: {result.stderr}"
+            
+            if success:
+                print("✅ OnShape to Robot conversion completed successfully!")
+            else:
+                print(f"❌ OnShape to Robot conversion failed: {error_message}")
+            
+            print("Conversion logs:")
+            print(logs)
+            
+        except subprocess.TimeoutExpired:
+            print("❌ OnShape to Robot conversion timed out after 5 minutes")
+            return
+        except Exception as e:
+            print(f"❌ Failed to run OnShape to Robot conversion in subprocess: {str(e)}")
+            return
+        
+        # Step 3: Agent URDF fixing
+        print("\n🔧 Step 3: Agent URDF Fixing...")
+        print("-" * 40)
+        
+        fix_message = "The URDF file has been regenerated from the OnShape assembly. Please now examine the newly generated URDF file and fix any issues you find. Focus on: 1) Renaming mates to use proper dof_ prefixes, 2) Removing duplicate links, 3) Setting appropriate materials if needed. Make all necessary improvements to create a simulation-ready URDF."
+        
+        await run_agent_interaction(test_client_id, fix_message, "URDF Fixing")
+        
+        # Final status
+        print("\n" + "=" * 60)
+        print("Final Robot Status:")
+        status = await get_robot_status(test_client_id)
+        for key, value in status.items():
+            print(f"  {key}: {value}")
+        print("=" * 60)
+        print("🎉 Demo completed!")
+        
+        # Restore original directory
+        os.chdir(original_cwd)
+    
+    async def run_agent_interaction(client_id: str, message: str, phase_name: str):
+        """Run a single agent interaction and handle the responses"""
+        full_response = ""
+        
+        try:
+            async for response in get_agent_response(message, client_id):
+                if response["type"] == "stream":
+                    # Just accumulate, don't print each token
+                    full_response = response['content']
+                elif response["type"] == "tool_action":
+                    tool_action = response["tool_action"]
+                    print(f"\n🔧 Tool Action: {tool_action['name']}")
+                    print(f"   Arguments: {tool_action['arguments']}")
+                    print(f"   Access Level: {tool_action['access']}")
+                    
+                    # For testing, auto-approve write operations
+                    if tool_action['access'] == 'write':
+                        print("   ✅ Auto-approving for demo...")
+                        approval_response = await handle_tool_approval(tool_action['call_id'], True)
+                        if approval_response["type"] == "tool_observation":
+                            print(f"   Result: {approval_response['tool_observation']['output']}")
+                        
+                elif response["type"] == "tool_observation":
+                    print(f"🔍 Tool Result: {response['tool_observation']['output']}")
+                elif response["type"] == "error":
+                    print(f"❌ Error: {response['content']}")
+                elif response["type"] == "stream_complete":
+                    # Print the final accumulated response
+                    if full_response.strip():
+                        print(f"\n💬 {phase_name} Response:")
+                        print(full_response)
+                    print(f"\n✅ {phase_name} completed")
+                    break
+        except Exception as e:
+            print(f"❌ {phase_name} failed with error: {str(e)}")
+    
+    # Run the async test
+    asyncio.run(test_agent())

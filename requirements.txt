@@ -4,3 +4,5 @@ pydantic==2.5.0
 openai
 openai-agents
 python-dotenv
+onshape
+commentjson
