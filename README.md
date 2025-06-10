@@ -190,6 +190,8 @@ app/
     ├── remove_duplicate_links.py
     ├── set_material.py
     └── run_onshape_conversion.py
+└── onshape/                # helper library for onshape conversion
+└── data/                   # data folder 
 ```
 
 ## 🔄 Development Workflow
