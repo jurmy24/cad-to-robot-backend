@@ -1,0 +1,115 @@
+{
+  "mateValues": [
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.3338252551942078,
+      "mateName": "Revolute12",
+      "featureId": "M+evkqlThhYJ0P4po"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.6004900511919757,
+      "mateName": "Revolute10",
+      "featureId": "M0GToD3SWeK9VnXD3"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.6981317007977408,
+      "mateName": "Revolute13",
+      "featureId": "M1IazVNE5W4vJUNoV"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.822513388198016,
+      "mateName": "Revolute15",
+      "featureId": "M1ylvIHxZ8M0iElKV"
+    },
+    {
+      "jsonType": "Planar",
+      "translationX": 0.019999999999999997,
+      "translationY": -0.0024999999999999445,
+      "rotationZ": 0.1745329251994324,
+      "mateName": "Planar 1",
+      "featureId": "M3bRshNH4AyvUjWkD"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.5353011909751171,
+      "mateName": "Revolute3",
+      "featureId": "MHOwq5bfHuvUdk3iP"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.6004900511919731,
+      "mateName": "Revolute9",
+      "featureId": "MOQZpvOetFT5k7ZEG"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.7519778946555323,
+      "mateName": "Revolute1",
+      "featureId": "MUGWBGtssAj95nbiQ"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.6004900511919748,
+      "mateName": "revolute5",
+      "featureId": "MViE3hRjBRYZyp1lh"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.5913062777115048,
+      "mateName": "Revolute16",
+      "featureId": "MXnS81mCNmRlvn0NU"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.5353011909751182,
+      "mateName": "revolute4",
+      "featureId": "MYcLtUbY+EF3JPgWv"
+    },
+    {
+      "jsonType": "Cylindrical",
+      "translationZ": -0.014999999999999812,
+      "rotationZ": -0.17453292519943275,
+      "mateName": "Cylindrical11",
+      "featureId": "Mcgx1OKXQaEak8qxD"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -2.6106421695581417,
+      "mateName": "Revolute7",
+      "featureId": "MfLO1Uy9GeUtL7G/m"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.25015622855994946,
+      "mateName": "Revolute6",
+      "featureId": "MgWLGiN5HA4r6fhZP"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.4167733525120718,
+      "mateName": "Revolute11",
+      "featureId": "MkUaUjNeLdOoKljr/"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": 0.5339927691614778,
+      "mateName": "Revolute2",
+      "featureId": "Mp73pEc97NC9duhPQ"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -0.5083581803936408,
+      "mateName": "Revolute14",
+      "featureId": "MwWfuC/yjuF6FRWDF"
+    },
+    {
+      "jsonType": "Revolute",
+      "rotationZ": -1.3355349169491868,
+      "mateName": "Revolute8",
+      "featureId": "MzutkwkjjjzfDKR6o"
+    }
+  ]
+}

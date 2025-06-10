@@ -1,0 +1,67 @@
+{
+  // Onshape URL of the assembly
+  "url": "https://cad.onshape.com/documents/4310ba928596654794f7356f/w/c64fb7645706442b3cdc2d24/e/35d843946dd86a61ec94bda5",
+  // Output format: urdf or mujoco (required)
+  "output_format": "urdf"
+  // // Output filename (default: "robot")
+  // // Extension (.urdf, .xml) will be added automatically
+  // "output_filename": "stable-wheel-legged",
+  // // Assets directory (default: "assets")
+  // "assets_dir": "assets",
+
+  // // If you don't use "url", you can alternatively specify the following
+  // // The Onshape document id to parse, see "getting started" (optional)
+  // "document_id": "document-id",
+  // // The document version id (optional)
+  // "version_id": "version-id",
+  // // The workspace id (optional)
+  // "workspace_id": "workspace-id",
+  // // Element id (optional)
+  // "element_id": "element-id",
+  // // Assembly name to use in the document (optional)
+  // "assembly_name": "robot",
+
+  // // Onshape configuration to use (default: "default")
+  // "configuration": "Configuration=BigFoot;RodLength=50mm",
+  // // Robot name (default: "onshape")
+  // "robot_name": "robot",
+
+  // // Ignore limits (default: false)
+  // "ignore_limits": true,
+
+  // // Parts to ignore (default: {})
+  // "ignore": {
+  //     // Ignore visual for visual
+  //     "part1": "visual",
+  //     "screw*": "visual",
+
+  //     // Ignore everything expect "leg" for collision
+  //     "*" : "collision"
+  //     "!leg": "collision"
+  // },
+
+  // // Whether to keep frame links (default: false)
+  // "draw_frames": true,
+  // // Override the color of all links (default: None)
+  // "color": [0.5, 0.1, 0.1],
+
+  // // Disable dynamics retrieval (default: false)
+  // "no_dynamics": true,
+
+  // // Whether to include configuration suffix to part (stl) files (default: true)
+  // "include_configuration_suffix": false,
+
+  // // Post import commands (default: [])
+  // "post_import_commands" [
+  //     "echo 'Import done'",
+  //     "echo 'Do something else'"
+  // ],
+
+  // // Custom processors
+  // "processors": [
+  //     "my_project.my_custom_processor:MyCustomProcessor"
+  // ]
+
+  // // More options available in specific exporters (URDF, SDF, MuJoCo)
+  // // More options available in processors
+}

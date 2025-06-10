@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!-- Generated using Placeholder agent system -->
+<!-- Onshape https://cad.onshape.com/documents/4310ba928596654794f7356f/w/c64fb7645706442b3cdc2d24/e/35d843946dd86a61ec94bda5 -->
+<robot name="stable-wheel-legged">
+  <!-- Link back_left_wheel -->
+  <link name="back_left_wheel">
+    <inertial>
+      <origin xyz="0.147995 0.154416 -0.0917246" rpy="0 0 0"/>
+      <mass value="0.354411"/>
+      <inertia ixx="0.000627958" ixy="-3.95507e-06" ixz="8.82828e-20" iyy="0.000341107" iyz="-1.58968e-18" izz="0.000341052"/>
+    </inertial>
+    <!-- Part back_left_wheel -->
+    <visual>
+      <origin xyz="-0.0464381 0.188396 -0.472277" rpy="1.65285 -2.0633e-16 -0.0137843"/>
+      <geometry>
+        <mesh filename="package://assets/back_left_wheel.stl"/>
+      </geometry>
+      <material name="back_left_wheel_material">
+        <color rgba="0.301961 0.301961 0.301961 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.0464381 0.188396 -0.472277" rpy="1.65285 -2.0633e-16 -0.0137843"/>
+      <geometry>
+        <mesh filename="package://assets/back_left_wheel.stl"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
