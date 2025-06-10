@@ -7,7 +7,7 @@
     <inertial>
       <origin xyz="0.147995 0.154416 -0.0917246" rpy="0 0 0"/>
       <mass value="0.354411"/>
-      <inertia ixx="0.000627958" ixy="-3.95507e-06" ixz="8.82299e-20" iyy="0.000341107" iyz="-1.59307e-18" izz="0.000341052"/>
+      <inertia ixx="0.000627958" ixy="-3.95507e-06" ixz="8.82134e-20" iyy="0.000341107" iyz="-1.59413e-18" izz="0.000341052"/>
     </inertial>
     <!-- Part back_left_wheel -->
     <visual>

@@ -45,14 +45,14 @@ def load_system_prompt() -> str:
         return "You are a CAD to URDF conversion assistant."
 
 
-# Initialize the CAD to URDF agent
-cad_agent = Agent[CADtoURDFContext](
-    name="CAD to URDF Agent",
-    handoff_description="An intelligent assistant that specializes in converting OnShape assemblies to simulation-ready URDF files.",
-    instructions=(
+def get_agent_instructions(robot_name: str = None) -> str:
+    """Get agent instructions with dynamic robot name"""
+    robot_instruction = f"The robot name you should work with is: {robot_name}" if robot_name else "You will work with the robot name provided in the context."
+    
+    return (
         f"{RECOMMENDED_PROMPT_PREFIX} "
         f"{load_system_prompt()} "
-        "\n\nThe robot name you should work with is: folding-mechanism "
+        f"\n\n{robot_instruction} "
         "\n\n## THINKING AND REASONING REQUIREMENTS:"
         "\nYou MUST always write down your thoughts and reasoning before taking any action. "
         "Start each response by explaining:"
@@ -95,17 +95,26 @@ cad_agent = Agent[CADtoURDFContext](
         "- Continue with the workflow until completion"
         "\n\nAlways explain what changes you're making and why they're necessary for proper URDF conversion. "
         "Use the ReAct framework: Think, Act, Observe, Reflect."
-    ),
-    tools=[
-        run_onshape_conversion,
-        read_mates,
-        read_urdf,
-        rename_mates,
-        remove_duplicate_links,
-        set_material,
-        set_multiple_materials,
-    ],
-)
+    )
+
+
+# Initialize the CAD to URDF agent with dynamic instructions
+def create_cad_agent(robot_name: str = None) -> Agent[CADtoURDFContext]:
+    """Create a CAD to URDF agent with dynamic robot name"""
+    return Agent[CADtoURDFContext](
+        name="CAD to URDF Agent",
+        handoff_description="An intelligent assistant that specializes in converting OnShape assemblies to simulation-ready URDF files.",
+        instructions=get_agent_instructions(robot_name),
+        tools=[
+            run_onshape_conversion,
+            read_mates,
+            read_urdf,
+            rename_mates,
+            remove_duplicate_links,
+            set_material,
+            set_multiple_materials,
+        ],
+    )
 
 # Store conversation context and pending tool calls
 conversation_contexts: Dict[str, CADtoURDFContext] = {}
@@ -126,7 +135,7 @@ def get_tool_access_level(tool_name: str) -> str:
 
 
 async def get_agent_response(
-    message: str, client_id: str
+    message: str, client_id: str, robot_name: str = None
 ) -> AsyncGenerator[Dict[str, Any], None]:
     """
     Get response from the CAD to URDF agent system and format it for WebSocket.
@@ -134,17 +143,28 @@ async def get_agent_response(
     # Initialize context and history for this client if not exists
     if client_id not in conversation_contexts:
         conversation_contexts[client_id] = CADtoURDFContext(
-            robot_name="folding-mechanism"
+            robot_name=robot_name
         )
         conversation_history[client_id] = []
 
     context = conversation_contexts[client_id]
+    
+    # Update robot name if provided and different from current
+    if robot_name and context.robot_name != robot_name:
+        context.robot_name = robot_name
+    
+    # Use context robot_name if no robot_name parameter provided
+    effective_robot_name = robot_name or context.robot_name
+    
     history = conversation_history[client_id]
 
     # Add user message to history
     history.append({"content": message, "role": "user"})
 
     try:
+        # Create agent with the effective robot name
+        cad_agent = create_cad_agent(effective_robot_name)
+        
         # Run the agent
         result = Runner.run_streamed(cad_agent, history, context=context)
 
@@ -313,13 +333,23 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
                     run_onshape_conversion,
                 )
 
-                robot_name = args.get("robot_name", "folding-mechanism")
+                client_id = tool_info["client_id"]
+                robot_name = args.get("robot_name")
+                if not robot_name and client_id in conversation_contexts:
+                    robot_name = conversation_contexts[client_id].robot_name
+                if not robot_name:
+                    robot_name = "default-robot"
                 output = await run_onshape_conversion(robot_name)
 
             elif tool_name == "rename_mates":
                 from app.augmented_tools.rename_mates import rename_mates
 
-                robot_name = args.get("robot_name", "folding-mechanism")
+                client_id = tool_info["client_id"]
+                robot_name = args.get("robot_name")
+                if not robot_name and client_id in conversation_contexts:
+                    robot_name = conversation_contexts[client_id].robot_name
+                if not robot_name:
+                    robot_name = "default-robot"
                 rename_mapping_json = args.get("rename_mapping_json", "{}")
                 output = await rename_mates(robot_name, rename_mapping_json)
 
@@ -328,13 +358,23 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
                     remove_duplicate_links,
                 )
 
-                robot_name = args.get("robot_name", "folding-mechanism")
+                client_id = tool_info["client_id"]
+                robot_name = args.get("robot_name")
+                if not robot_name and client_id in conversation_contexts:
+                    robot_name = conversation_contexts[client_id].robot_name
+                if not robot_name:
+                    robot_name = "default-robot"
                 output = await remove_duplicate_links(robot_name)
 
             elif tool_name == "set_material":
                 from app.augmented_tools.set_material import set_material
 
-                robot_name = args.get("robot_name", "folding-mechanism")
+                client_id = tool_info["client_id"]
+                robot_name = args.get("robot_name")
+                if not robot_name and client_id in conversation_contexts:
+                    robot_name = conversation_contexts[client_id].robot_name
+                if not robot_name:
+                    robot_name = "default-robot"
                 link_name = args.get("link_name", "unknown")
                 rgba = args.get("rgba", "1 0 0 1")
                 output = await set_material(robot_name, link_name, rgba)
@@ -342,7 +382,12 @@ async def handle_tool_approval(call_id: str, approved: bool) -> Dict[str, Any]:
             elif tool_name == "set_multiple_materials":
                 from app.augmented_tools.set_material import set_multiple_materials
 
-                robot_name = args.get("robot_name", "folding-mechanism")
+                client_id = tool_info["client_id"]
+                robot_name = args.get("robot_name")
+                if not robot_name and client_id in conversation_contexts:
+                    robot_name = conversation_contexts[client_id].robot_name
+                if not robot_name:
+                    robot_name = "default-robot"
                 materials_json = args.get("materials_json", "{}")
                 output = await set_multiple_materials(robot_name, materials_json)
 
@@ -413,16 +458,32 @@ def get_pending_tool_calls(client_id: str) -> List[Dict[str, Any]]:
 if __name__ == "__main__":
     import asyncio
     import os
+    import sys
+    from pathlib import Path
 
-    async def test_agent():
-        """Test the CAD to URDF agent with folding-mechanism data in a single interaction"""
+    async def test_agent(robot_name: str = "default-robot"):
+        """Test the CAD to URDF agent with specified robot data in a single interaction"""
         # Change to parent directory so tools can find data/ folder
         original_cwd = os.getcwd()
         if os.path.basename(os.getcwd()) == "app":
             os.chdir("..")
             print(f"Changed directory from {original_cwd} to {os.getcwd()}")
 
-        robot_name = "folding-mechanism"
+        # Validate that the robot folder exists
+        robot_data_path = Path(f"data/{robot_name}")
+        if not robot_data_path.exists():
+            print(f"❌ Error: Robot data folder 'data/{robot_name}' not found!")
+            print(f"Available robot folders:")
+            data_path = Path("data")
+            if data_path.exists():
+                for folder in data_path.iterdir():
+                    if folder.is_dir():
+                        print(f"  - {folder.name}")
+            else:
+                print("  No 'data' folder found!")
+            os.chdir(original_cwd)
+            return
+
         test_client_id = "test_client"
 
         print("🤖 CAD to URDF Agent Demo - Single Interaction")
@@ -433,7 +494,7 @@ if __name__ == "__main__":
         print("=" * 60)
 
         # Single comprehensive message that leverages the system prompt
-        comprehensive_message = """Please perform a complete CAD to URDF conversion workflow for the folding-mechanism robot. I need you to:
+        comprehensive_message = f"""Please perform a complete CAD to URDF conversion workflow for the {robot_name} robot. I need you to:
 
 1. First, run the OnShape to URDF conversion tool to generate an initial URDF file
 2. Analyze the current assembly by reading the existing mates to understand the joint structure
@@ -450,7 +511,7 @@ Please work through this systematically, explaining each step and the reasoning 
         print("-" * 40)
 
         await run_agent_interaction(
-            test_client_id, comprehensive_message, "Complete Workflow"
+            test_client_id, comprehensive_message, "Complete Workflow", robot_name
         )
 
         # Final status
@@ -465,12 +526,12 @@ Please work through this systematically, explaining each step and the reasoning 
         # Restore original directory
         os.chdir(original_cwd)
 
-    async def run_agent_interaction(client_id: str, message: str, phase_name: str):
+    async def run_agent_interaction(client_id: str, message: str, phase_name: str, robot_name: str):
         """Run a single agent interaction and handle the responses"""
         full_response = ""
 
         try:
-            async for response in get_agent_response(message, client_id):
+            async for response in get_agent_response(message, client_id, robot_name):
                 if response["type"] == "stream":
                     # Just accumulate, don't print each token
                     full_response = response["content"]
@@ -505,5 +566,18 @@ Please work through this systematically, explaining each step and the reasoning 
         except Exception as e:
             print(f"❌ {phase_name} failed with error: {str(e)}")
 
+    # Handle command line arguments
+    if len(sys.argv) > 1:
+        robot_name = sys.argv[1]
+        print(f"Using robot name from command line: {robot_name}")
+    else:
+        # Check if we're in interactive mode and prompt for robot name
+        if sys.stdin.isatty():
+            robot_name = input("Enter robot name (or press Enter for 'default-robot'): ").strip()
+            if not robot_name:
+                robot_name = "default-robot"
+        else:
+            robot_name = "default-robot"
+    
     # Run the async test
-    asyncio.run(test_agent())
+    asyncio.run(test_agent(robot_name))

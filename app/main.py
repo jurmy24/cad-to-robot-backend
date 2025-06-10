@@ -164,7 +164,7 @@ async def stream_response(message: str) -> AsyncGenerator[str, None]:
         yield word + " "
 
 
-async def send_urdf_file(client_id: str, robot_name: str = "folding-mechanism"):
+async def send_urdf_file(client_id: str, robot_name: str = "default-robot"):
     """Send the current URDF file content to the client"""
     try:
         # Look for URDF file in the robot directory
@@ -272,15 +272,8 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
             data = await websocket.receive_text()
             message_data = json.loads(data)
 
-            # Handle cancellation requests
-            if message_data.get("type") == "cancel_request":
-                request_id = message_data.get("request_id")
-                if request_id and request_id in active_requests:
-                    # Cancel the task
-                    task = active_requests[request_id]
-                    task.cancel()
-                    print(f"Cancelled request {request_id}")
-                continue
+            # Extract robot_name from message data, with fallback to default
+            robot_name = message_data.get("robot_name", "default-robot")
 
             # Handle tool approval responses
             if message_data.get("type") == "tool_approval_response":
@@ -321,26 +314,29 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
                                 ]
                             ):
                                 await send_urdf_file(client_id)
+                            if any(keyword in output.lower() for keyword in [
+                                "onshape", "conversion", "duplicate", "material", "urdf"
+                            ]):
+                                await send_urdf_file(client_id, robot_name)
                                 break
             else:
-                # Handle regular messages with request ID
-                request_id = message_data.get(
-                    "request_id", f"req_{datetime.now().timestamp()}"
-                )
-                message_content = message_data.get("content", "")
-
-                # Create and store the task for potential cancellation
-                task = asyncio.create_task(
-                    handle_agent_request(message_content, client_id, request_id)
-                )
-                active_requests[request_id] = task
-
-                # Wait for the task to complete or be cancelled
-                try:
-                    await task
-                except asyncio.CancelledError:
-                    # Task was cancelled, cleanup is handled in handle_agent_request
-                    pass
+                # Use agent responses for regular messages
+                async for response in get_agent_response(
+                    message_data.get("content", ""), client_id, robot_name
+                ):
+                    await manager.send_personal_message(json.dumps(response), client_id)
+                    
+                    # Check if this was a successful tool observation for URDF-modifying tools
+                    if (response.get("type") == "tool_observation" and 
+                        "✅" in response.get("tool_observation", {}).get("output", "")):
+                        
+                        output = response.get("tool_observation", {}).get("output", "")
+                        # Check if any URDF-modifying operations completed successfully
+                        if any(keyword in output.lower() for keyword in [
+                            "onshape", "conversion completed", "duplicate", "removed", 
+                            "material", "urdf", "robot processing completed"
+                        ]):
+                            await send_urdf_file(client_id, robot_name)
 
     except WebSocketDisconnect:
         # Cancel all active requests for this client
