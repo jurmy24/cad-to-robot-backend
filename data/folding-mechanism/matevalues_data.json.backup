@@ -4,7 +4,7 @@
       "jsonType": "Cylindrical",
       "translationZ": 4.85722573273506e-16,
       "rotationZ": 0.6099779326766065,
-      "mateName": "dof_cylindrical_8",
+      "mateName": "Cylindrical 8",
       "featureId": "M+vQ8L8EZWtcaPunw"
     },
     {
@@ -26,21 +26,21 @@
     {
       "jsonType": "Revolute",
       "rotationZ": 3.0624880204391323,
-      "mateName": "dof_revolute_11",
+      "mateName": "Revolute 11",
       "featureId": "M92FS9YQ3XjEXZtid"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": -0.010000000000000495,
       "rotationZ": -0.6099779326766068,
-      "mateName": "dof_cylindrical_12",
+      "mateName": "Cylindrical 12",
       "featureId": "MA7NoUzDErp6PFX9Q"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": 0.007499999999999986,
       "rotationZ": 0.11159108302590505,
-      "mateName": "dof_cylindrical_5",
+      "mateName": "Cylindrical 5",
       "featureId": "MAagLPUKF84+FDvWq"
     },
     {
@@ -78,45 +78,45 @@
     {
       "jsonType": "Revolute",
       "rotationZ": -0.10794038773486125,
-      "mateName": "dof_revolute_5",
+      "mateName": "Revolute 5",
       "featureId": "MFsQR2L0GgTDm6KP4"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -0.4083747730949847,
-      "mateName": "dof_revolute_1",
+      "mateName": "Revolute 1",
       "featureId": "MHRrmLLu/sXH5D6pQ"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": 0.32656996896942886,
-      "mateName": "dof_revolute_9",
+      "mateName": "Revolute 9",
       "featureId": "MIFIhLxeNp/R4yK2D"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -2.397355723796372,
-      "mateName": "dof_revolute_12",
+      "mateName": "Revolute 12",
       "featureId": "MJ0fufyx2VNfzEpAO"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": -0.008999999999998804,
       "rotationZ": -0.4100592213701866,
-      "mateName": "dof_cylindrical_1",
+      "mateName": "Cylindrical 1",
       "featureId": "MJ6Iyok2BVHbHwvZw"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": 0.005000000000000067,
       "rotationZ": -0.021649896524858825,
-      "mateName": "dof_cylindrical_6",
+      "mateName": "Cylindrical 6",
       "featureId": "MKJVpqhs0L6gasWlV"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -0.49187671114462095,
-      "mateName": "dof_revolute_3",
+      "mateName": "Revolute 3",
       "featureId": "MNCi4eJCbm4pptyC3"
     },
     {
@@ -131,19 +131,19 @@
       "jsonType": "Cylindrical",
       "translationZ": -0.01500000000000069,
       "rotationZ": -1.5695517023522054,
-      "mateName": "dof_cylindrical_2",
+      "mateName": "Cylindrical 2",
       "featureId": "MPD/L8M6tj1WAILHp"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -0.054844047855374,
-      "mateName": "dof_revolute_4",
+      "mateName": "Revolute 4",
       "featureId": "MR/xrk+shiiKkdViy"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": 1.7328919816582127,
-      "mateName": "dof_revolute_2",
+      "mateName": "Revolute 2",
       "featureId": "MRpd4fxAHp7sRCR1Z"
     },
     {
@@ -157,7 +157,7 @@
     {
       "jsonType": "Revolute",
       "rotationZ": -0.40986748657620087,
-      "mateName": "dof_revolute_8",
+      "mateName": "Revolute 8",
       "featureId": "MVrz9KBFlUasVb3F2"
     },
     {
@@ -172,14 +172,14 @@
       "jsonType": "Cylindrical",
       "translationZ": -0.00749999999999972,
       "rotationZ": 0.08457012245104932,
-      "mateName": "dof_cylindrical_7",
+      "mateName": "Cylindrical 7",
       "featureId": "MeUmvhVJ6JAz9MIGX"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": 3.469446951953614e-18,
       "rotationZ": -2.6645352591003757e-15,
-      "mateName": "dof_cylindrical_11",
+      "mateName": "Cylindrical 11",
       "featureId": "MegfBO+va9sNsABDR"
     },
     {
@@ -210,58 +210,58 @@
       "jsonType": "Cylindrical",
       "translationZ": 0.015,
       "rotationZ": 0.00576548079581542,
-      "mateName": "dof_cylindrical_9",
+      "mateName": "Cylindrical 9",
       "featureId": "MklV4lklSu8FGHd8k"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": 0.29082063358875576,
-      "mateName": "dof_revolute_10",
+      "mateName": "Revolute 10",
       "featureId": "MmMOJK4OhTyZ9tZ2D"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": 0.07578031237915271,
-      "mateName": "dof_revolute_6",
+      "mateName": "Revolute 6",
       "featureId": "MnlioDvRLAvEorPb9"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": 0.05500000000000008,
       "rotationZ": 0.7907227623496409,
-      "mateName": "dof_cylindrical_3",
+      "mateName": "Cylindrical 3",
       "featureId": "Mol4IWiiK3f6RHq8j"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": -0.020000000000000004,
       "rotationZ": -0.02598688460004528,
-      "mateName": "dof_cylindrical_10",
+      "mateName": "Cylindrical 10",
       "featureId": "MsE/7iYT/AdEsYMQm"
     },
     {
       "jsonType": "Cylindrical",
       "translationZ": -0.009999999999999877,
       "rotationZ": -0.7907227623496418,
-      "mateName": "dof_cylindrical_4",
+      "mateName": "Cylindrical 4",
       "featureId": "MtVXJcqMIvZYQy8jO"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -0.10753267777501385,
-      "mateName": "dof_revolute_7",
+      "mateName": "Revolute 7",
       "featureId": "MuxoFr9/1pfuoq4rS"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": -1.1222834044881003,
-      "mateName": "dof_revolute_14",
+      "mateName": "Revolute 14",
       "featureId": "MvpTvPs/ov7xhG4IH"
     },
     {
       "jsonType": "Revolute",
       "rotationZ": 1.706398770495134,
-      "mateName": "dof_revolute_13",
+      "mateName": "Revolute 13",
       "featureId": "MzJRtxIwnrH8ei0n8"
     }
   ]
