@@ -9,7 +9,7 @@ from onshape.src.robot_builder import RobotBuilder
 from onshape.src.exporter_urdf import ExporterURDF
 
 
-def run_onshape_to_robot(robot_directory: str):
+def run_onshape_to_robot(robot_name: str):
     """
     This is the entry point of the export script, i.e the "onshape-to-robot" command.
     Takes a robot directory path and processes it to generate URDF files.
@@ -26,10 +26,10 @@ def run_onshape_to_robot(robot_directory: str):
     try:
         with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
             # Retrieving robot path
-            if not robot_directory:
+            if not robot_name:
                 raise Exception("ERROR: you must provide the robot directory")
 
-            robot_path: str = robot_directory
+            robot_path: str = robot_name
             print(f"Processing robot directory: {robot_path}")
 
             # Loading configuration
